@@ -1,0 +1,11 @@
+obj_bust_socrates.glb, obj_bust_aristotle.glb
+
+Source: 3D scans of the portrait heads of Socrates and Aristotle, Musée du Louvre, Paris,
+from "Scan the World" by MyMiniFactory (https://www.myminifactory.com/scantheworld/).
+License: Creative Commons Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)
+https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+Changes: converted from STL to glTF, reduced polygon count by vertex clustering,
+rotated to face forward, the stone base of the Aristotle head was cut away,
+cylindrical UVs added. These modified files are shared under the same license (CC BY-NC-SA).
+Used non-commercially in a classroom ethics escape-room game.
