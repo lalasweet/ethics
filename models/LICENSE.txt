@@ -9,3 +9,11 @@ Changes: converted from STL to glTF, reduced polygon count by vertex clustering,
 rotated to face forward, the stone base of the Aristotle head was cut away,
 cylindrical UVs added. These modified files are shared under the same license (CC BY-NC-SA).
 Used non-commercially in a classroom ethics escape-room game.
+
+obj_kit_jesus.glb, obj_kit_mary.glb
+
+Source: 3D scans "Corpus Christi" and "Virgin and Child" (Sotheby's), from "Scan the World"
+by MyMiniFactory (https://www.myminifactory.com/scantheworld/).
+License: Creative Commons Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)
+Changes: polygon count reduced (decimate), scaled and placed on a stone pedestal;
+a wooden cross was added behind the Corpus Christi figure. Shared under the same license.
