@@ -279,6 +279,13 @@ select, input[type=number] { font: inherit; color: var(--ink); background: var(-
 .seg { display: flex; flex-wrap: wrap; gap: 6px; }
 .seg button { border: 1px solid var(--line); background: var(--bg); border-radius: 99px; padding: 5px 14px; }
 .seg button[aria-pressed="true"] { background: var(--aegean); border-color: var(--aegean); color: var(--surface); }
+/* 고르기(match): 문장 아래에 보기 버튼을 같은 너비로 나란히. 손가락으로 누르기 쉽게 크게 */
+.row.mrow { grid-template-columns: 1fr; gap: 8px; }
+.mrow .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; }
+.mrow .seg button { min-height: 42px; padding: 8px 10px; border-radius: 10px; font-size: 15px; line-height: 1.25; transition: background .15s, transform .1s; }
+.mrow .seg button:active { transform: scale(.97); }
+.mrow .seg button[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--gold-soft) inset; font-weight: 700; }
+@media (max-width: 520px) { .mrow .seg button { font-size: 14px; padding: 8px 6px; } }
 .actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
 .fb { min-height: 1.6em; font-weight: 500; }
 .fb.bad { color: var(--bad); }
@@ -832,14 +839,20 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     // 감실 그림이 있으면 문제 창 위에 그 장면을 보여 준다 (AI 그림은 2D 화면에만 쓴다)
     let html = '<img class="pz-art" src="images/' + p.niche.file + '" alt="" onerror="this.remove()">' + '<p class="lead">' + esc(p.lead) + '</p>';
     if (p.type === 'match') {
-      const opts = p.options.length > 3 ? shuffle(p.options) : p.options;
+      // 보기 버튼을 눌러 고른다(예전의 펼침 메뉴 대신). 줄마다 보기가 모두 버튼으로 나란히
+      const opts = p.options.length > 3 ? shuffle(p.options) : p.options, picks = {};
       html += '<div class="rows">' + p.rows.map((r, i) =>
-        '<div class="row' + (p.quote ? ' quote' : '') + '"><span class="q">' + esc(r[0]) + '</span>' +
-        '<select id="' + p.id + '-s' + i + '" aria-label="' + esc(r[0]) + '"><option value="">고르세요</option>' +
-        opts.map(o => '<option>' + esc(o) + '</option>').join('') + '</select></div>').join('') + '</div>';
+        '<div class="row mrow"><span class="q">' + esc(r[0]) + '</span><div class="seg" data-row="' + i + '" role="group" aria-label="' + esc(r[0]) + '">' +
+        opts.map(o => '<button type="button" aria-pressed="false" data-v="' + esc(o) + '">' + esc(o) + '</button>').join('') + '</div></div>').join('') + '</div>';
       mbody.innerHTML = html + hintBlock(p.id, p.hint) + actionBar(true);
+      mbody.querySelectorAll('.seg').forEach(seg => seg.addEventListener('click', e => {
+        const b = e.target.closest('button'); if (!b) return;
+        seg.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', 'false'));
+        b.setAttribute('aria-pressed', 'true'); picks[seg.dataset.row] = b.dataset.v; sfx('lamp');
+      }));
       $('check').addEventListener('click', () => {
-        const ok = p.rows.filter((r, i) => $(p.id + '-s' + i).value === r[1]).length;
+        if (Object.keys(picks).length < p.rows.length) return say('아직 고르지 않은 줄이 ' + (p.rows.length - Object.keys(picks).length) + '개 있어요.', 'bad');
+        const ok = p.rows.filter((r, i) => picks[i] === r[1]).length;
         if (ok === p.rows.length) return solve(p);
         say(p.rows.length + '개 중 ' + ok + '개가 맞았어요. 틀린 것은 직접 찾아보세요.', 'bad');
       });
@@ -2080,7 +2093,8 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
           add(g, B(HSW * 2, h, sd + 0.005), stM, 0, top - h / 2, zc); add(g, B(HSW * 2 + 0.02, 0.035, 0.05), stoneM, 0, top - 0.017, zc - sd / 2 + 0.025); }
         [-1, 1].forEach(s => add(g, B(0.2, downNext + 0.02, HL + 0.3), wallM(HL, downNext), s * (HSW + 0.1), -downNext / 2, nz + HL / 2 - 0.15));
         add(g, B(HSW * 2 + 0.4, downNext, 0.2), wallM(2, downNext), 0, -downNext / 2, nz + HL + 0.1);
-        floors.push({ x0: -HSW, x1: HSW, z0: nz - 0.02, z1: nz + HL, y0: yb - downNext, y1: yb, over: true, on: () => !!S.opened[r.id] });
+        floors.push({ x0: -HSW, x1: HSW, z0: nz, z1: nz + HL, y0: yb - downNext, y1: yb, over: true, on: () => !!S.opened[r.id] });
+        floors.push({ x0: -HSW, x1: HSW, z0: nz - 0.45, z1: nz, y: yb - downNext, over: true, on: () => !!S.opened[r.id] }); // 벽 밑 굴 바닥(아랫방 높이)
         col(-HSW - 0.3, -HSW, nz, nz + HL, () => !!S.opened[r.id]); col(HSW, HSW + 0.3, nz, nz + HL, () => !!S.opened[r.id]);
         flame(g, ri, -HSW + 0.12, -downNext + 1.45, nz + 0.5, 0.38, true, 0xffb35a, 0.6);
       } else {
@@ -2102,7 +2116,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       // 지하 방: 방 전체 바닥 높이 + 윗방 바닥 아래를 막는 옹벽(가운데는 윗방 덮개 문에서 내려오는 계단 굴이 열려 있다)
       if (r.down) {
         const dh = roomBase(ri - 1) - yb;
-        floors.push({ x0: -hw - 0.5, x1: hw + 0.5, z0: cz - HD - 0.2, z1: cz + HD, y: yb });
+        floors.push({ x0: -hw - 0.5, x1: hw + 0.5, z0: cz - HD, z1: cz + HD, y: yb }); // 북쪽 벽 너머로 넘치지 않게(넘치면 아래층 계단에서 다시 위층 높이로 떠올라 벽에 걸린다)
         [-1, 1].forEach(s => { const a = 1.2, w = hw + 0.3 - a; add(g, B(w, dh, 0.3), wallM(w, dh), s * (a + w / 2), dh / 2, cz + HD + 0.15); });
         [-1, 1].forEach(s => add(g, B(0.3, dh + 0.3, 0.5), stoneM, s * 1.2, (dh + 0.3) / 2, cz + HD - 0.1)); // 굴 입구 양옆 돌기둥
         add(g, B(2.7, 0.3, 0.5), stoneM, 0, dh + 0.15, cz + HD - 0.1); // 굴 입구 위 돌 상인방
@@ -2440,7 +2454,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       // ── 3장: 수도원 앞뜰과 지하 ──
       const archX = (z, span, spring, m2, tube, sy) => { const a = add(g, new T.TorusGeometry(span / 2, tube || 0.16, 8, 28, Math.PI), m2, 0, spring, z); a.scale.y = sy || 1; return a; }; // 방을 가로지르는 반원 아치(x-y 평면)
       const archZ = (x, z, span, spring, m2) => { const a = add(g, new T.TorusGeometry(span / 2, 0.12, 8, 24, Math.PI), m2, x, spring, z); a.rotation.y = Math.PI / 2; return a; }; // 벽을 따라 늘어선 아치(z-y 평면)
-      const pillar = (x, z, h, r) => { add(g, B(r * 2.6, 0.16, r * 2.6), stoneM, x, 0.08, z); add(g, C(r, r * 1.12, h - 0.3, 14), stoneM, x, h / 2, z); add(g, B(r * 2.8, 0.18, r * 2.8), stoneM, x, h - 0.09, z); blob(g, x, z, r * 4); col(x - r * 1.3, x + r * 1.3, z - r * 1.3, z + r * 1.3); };
+      const pillar = (x, z, h, r, pm) => { pm = pm || stoneM; add(g, B(r * 2.6, 0.16, r * 2.6), pm, x, 0.08, z); add(g, C(r, r * 1.12, h - 0.3, 14), pm, x, h / 2, z); add(g, B(r * 2.8, 0.18, r * 2.8), pm, x, h - 0.09, z); blob(g, x, z, r * 4); col(x - r * 1.3, x + r * 1.3, z - r * 1.3, z + r * 1.3); };
       if (k === 'abbeygate') {
         // 밤의 수도원 앞뜰: 가운데 돌길, 양옆 아치 회랑 기둥, 약초밭, 북쪽 문 위 뾰족 아치와 장미창, 문 위 십자가
         const pathM = L(0xb8ae9e); useTex(pathM, ['abbey_path.jpg', 'medieval_floor.jpg'], 0.8, 6, 0, () => pathM.color.set(0xd8d0c0));
@@ -2468,9 +2482,9 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       }
       if (k === 'crypt' || k === 'crypt2') {
         // 수도원 지하: 낮고 굵은 기둥 두 줄과 반원 아치, 벽가의 돌관·책장, 횃불. 남쪽은 내려온 돌계단
-        const CX = 2.7, SP = 1.9;
-        [2.0, -1.6, -5.2].forEach(z => { [-1, 1].forEach(s => pillar(s * CX, cz + z, SP, 0.26)); archX(cz + z, CX * 2, SP, stoneM, 0.2, 0.85); });
-        [-1, 1].forEach(s => { archZ(s * CX, cz + 0.2, 3.6, SP, stoneM); archZ(s * CX, cz - 3.4, 3.6, SP, stoneM); });
+        const CX = 2.7, SP = 1.9, cst = L(0x8a8174); useTex(cst, ['crypt_wall.jpg', 'medieval_wall.jpg'], 1, 1, 0, () => cst.color.set(0xd8d0c4)); // 기둥·아치는 지하 벽돌 질감
+        [2.0, -1.6, -5.2].forEach(z => { [-1, 1].forEach(s => pillar(s * CX, cz + z, SP, 0.26, cst)); archX(cz + z, CX * 2, SP, cst, 0.2, 0.85); });
+        [-1, 1].forEach(s => { archZ(s * CX, cz + 0.2, 3.6, SP, cst); archZ(s * CX, cz - 3.4, 3.6, SP, cst); });
         [[-hw, 0.6, 1], [hw, -3.4, -1], [-hw, -5.6, 1], [hw, 4.0, -1]].forEach(([x, z, s]) => torch(g, ri, x, cz + z, s, 0.75));
         if (k === 'crypt') {
           // 지하 서고: 벽을 따라 낡은 책장, 돌관 둘, 촛대
