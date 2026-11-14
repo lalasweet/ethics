@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <meta name="description" content="고대 그리스·헬레니즘·중세·근대의 방을 1인칭으로 걸으며 윤리와 사상 교과 내용으로 수수께끼를 푸는 수업용 3D 방탈출">
 <style>
 :root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -13,7 +14,7 @@ img { max-width: 100%; }
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif:wght@600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif:wght@600&family=Pinyon+Script&family=EB+Garamond:ital,wght@1,500&display=swap">
 <style>
 /* Layout: 위 제목·상태 띠, 가운데 1인칭 3D 게임 화면(HUD는 화면 위에 겹침), 아래 조작 띠와 교사용 안내. 퍼즐은 전체 화면 오버레이. */
 :root {
@@ -21,8 +22,8 @@ img { max-width: 100%; }
   --aegean: #1D5A8A; --aegean-soft: #DCE7F0; --gold: #9C7019; --gold-soft: #F1E6CC;
   --ok: #2C7A4D; --bad: #A53F2D;
   --shadow: 0 1px 2px rgba(29,36,49,.08), 0 6px 18px rgba(29,36,49,.06);
-  --f-display: "Gowun Batang", "Nanum Myeongjo", "Batang", serif;
-  --f-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --f-display: "Pretendard Variable", Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; /* 공개판은 Pretendard(build-index가 불러옴), 교사용 미리보기는 같은 한글 꼴의 Noto Sans KR */
+  --f-body: "Pretendard Variable", Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   --f-greek: "Noto Serif", "Times New Roman", serif;
 }
 @media (prefers-color-scheme: dark) {
@@ -366,6 +367,15 @@ select, input[type=number] { font: inherit; color: var(--ink); background: var(-
 @keyframes rollDn { from { transform: translateY(35%); opacity: .3; } }
 @keyframes rollUp { from { transform: translateY(-35%); opacity: .3; } }
 .padlock.shake { animation: shake .45s; }
+/* 컷인: 위아래 검은 띠(영화 화면처럼) */
+.cutbars { position: absolute; inset: 0; pointer-events: none; z-index: 6; }
+.cutbars.on { pointer-events: auto; cursor: pointer; }
+.cutbars i { position: absolute; left: 0; right: 0; height: 0; background: #000; transition: height .6s ease; }
+.cutbars i:first-child { top: 0; } .cutbars i:nth-child(2) { bottom: 0; }
+.cutbars.on i { height: 11%; }
+.cutbars span { position: absolute; right: 14px; bottom: 3%; font-size: 12px; color: rgba(255,255,255,.55); opacity: 0; transition: opacity .6s; }
+.cutbars.on span { opacity: 1; }
+.cutting > :not(canvas):not(.cutbars):not(.vignette):not(.overlay) { visibility: hidden; }
 /* 직접 써 넣기(word): 지워진 빈칸이 맞히면 금빛으로 채워진다 */
 .blanks { margin: 8px 0 12px; padding-left: 1.4em; line-height: 1.9; }
 .blanks .gap { display: inline-block; min-width: 2.4em; text-align: center; border-bottom: 2px solid var(--gold); color: var(--muted); letter-spacing: .1em; transition: color .3s, background .3s; }
@@ -507,7 +517,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
   </details>
   <footer class="credits">
     <p>윤리와 사상 Ⅲ. 서양 윤리사상 수업용 방탈출</p>
-    <p>질감·사물 이미지: Google Gemini(Nano Banana)로 생성한 AI 이미지 · 소크라테스·아리스토텔레스 두상 3D 스캔: 루브르 박물관 소장품, <a href="https://www.myminifactory.com/scantheworld/" target="_blank" rel="noopener">Scan the World</a>(MyMiniFactory), <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" target="_blank" rel="noopener">CC BY-NC-SA</a>, 삼각형 수를 줄이고 머리만 잘라 흉상에 얹음 · 3D 엔진: <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> (MIT License) · 글꼴: Google Fonts (Gowun Batang, Noto Sans KR, Noto Serif, SIL Open Font License) · 제작 도구: Claude</p>
+    <p>질감·사물 이미지: Google Gemini(Nano Banana)로 생성한 AI 이미지 · 소크라테스·아리스토텔레스 두상 3D 스캔: 루브르 박물관 소장품, <a href="https://www.myminifactory.com/scantheworld/" target="_blank" rel="noopener">Scan the World</a>(MyMiniFactory), <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" target="_blank" rel="noopener">CC BY-NC-SA</a>, 삼각형 수를 줄이고 머리만 잘라 흉상에 얹음 · 3D 엔진: <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> (MIT License) · 글꼴: Pretendard(공개판), Google Fonts (Noto Sans KR, Noto Serif, Pinyon Script, EB Garamond) · 모두 SIL Open Font License · 제작 도구: Claude</p>
   </footer>
   <div class="meander" aria-hidden="true"></div>
 </div>
@@ -711,7 +721,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     ov.hidden = false; G.release();
     setTimeout(() => $('mclose').focus(), 0);
   }
-  function closeModal() { ov.hidden = true; renderStatus(); G.sync(); try { $('game').focus({ preventScroll: true }); } catch (e) {} }
+  function closeModal() { ov.hidden = true; renderStatus(); G.sync(); if (G.afterModal) G.afterModal(); try { $('game').focus({ preventScroll: true }); } catch (e) {} }
   $('mclose').addEventListener('click', closeModal);
   ov.addEventListener('click', e => { if (e.target === ov) closeModal(); });
   function say(msg, kind) { const f = $('fb'); if (f) { f.textContent = msg; f.className = 'fb ' + (kind || ''); } if (kind === 'bad' && msg) sfx('bad'); }
@@ -747,7 +757,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
   }
   $('vnBox').addEventListener('click', vnAdvance);
   $('vnBox').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); vnAdvance(); } });
-  function closeVN() { clearInterval(vnTimer); vnEl.hidden = true; vnNextFn = null; renderStatus(); G.sync(); try { $('game').focus({ preventScroll: true }); } catch (e) {} }
+  function closeVN() { clearInterval(vnTimer); vnEl.hidden = true; vnNextFn = null; renderStatus(); G.sync(); if (G.afterModal) G.afterModal(); try { $('game').focus({ preventScroll: true }); } catch (e) {} }
   $('vnClose').addEventListener('click', closeVN);
   function openVN(p) {
     const V = p.vn, who0 = p.steps[0].who;
@@ -833,6 +843,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     $('gateOk').addEventListener('click', closeModal);
   }
   function openPuzzle(p) {
+    if (p.needs && p.needs.item) { (S.seen = S.seen || {})['ins:' + p.id] = true; G.sync(); } // 가져온 물건(손잡이·초 등)을 그 사물에 꽂았다
     if (p.vn) return openVN(p);
     openModal(p.who, p.name, p.room);
     sfx('page');
@@ -995,6 +1006,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
   function solve(p) {
     sfx('ok');
     S.solved[p.id] = true;
+    if (G.queueCut) G.queueCut(p.id); // 움직이는 사물이면 창을 닫을 때 컷인으로 보여 준다
     if (!p.take && !S.items.includes(p.id)) S.items.push(p.id); // take가 있으면 사물에서 직접 꺼내야 들어온다
     renderStatus(); G.sync();
     showConcept(p, true);
@@ -1109,6 +1121,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
   // 문이 열릴 때: 이 방의 단서는 가방에서 빠지고(글자 조각과 등불은 남는다), 다음 방 안내
   function openDoor(R, ri) {
     {
+      if (G.queueCut) G.queueCut('door:' + ri); // 문이 열리는 모습도 컷인으로
       S.opened[R.id] = true;
       // 자물쇠에 쓴 이 방의 단서는 가방에서 빠진다 (글자 조각과 등불은 남는다)
       const used = S.items.filter(id => R.puzzles.some(p => p.id === id)).length;
@@ -1222,6 +1235,9 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     let floors = [];
     // 움직이는 부분(비석의 작은 문, 정원의 쇠창살 문): on()이 참이면 a1, 아니면 a0 각도로 천천히 돌아간다
     let anims = [];
+    // 컷인 상태(아래 startCut): held[id]가 있는 동안 그 사물의 움직임을 미룬다
+    const held = {}; let cut = null, cutQ = [], bars = null;
+    const done = id => !!S.solved[id] && !held[id];
     const groundY = (x, z) => {
       let y = null, ov = null; // 바닥 정보가 없는 곳은 0. 지하 방은 음수 높이의 바닥이 깔려 있다. over(덮개 문 아래 계단)는 그 자리의 다른 바닥보다 앞선다, on()이 거짓이면 없는 셈
       floors.forEach(f => { if (f.on && !f.on()) return; if (x >= f.x0 && x <= f.x1 && z >= f.z0 && z <= f.z1) { const v = f.y != null ? f.y : f.y0 + (f.y1 - f.y0) * (z - f.z0) / (f.z1 - f.z0); if (f.over) ov = v; else y = y == null ? v : Math.max(y, v); } });
@@ -1280,7 +1296,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     }
     function label(text, w, h, bg, fg) {
       const cv = document.createElement('canvas'); cv.width = 512; cv.height = 128; const g = cv.getContext('2d');
-      const paint = () => { g.fillStyle = bg; g.fillRect(0, 0, 512, 128); g.fillStyle = fg; g.font = '700 ' + (text.length > 9 ? 42 : 54) + 'px "Gowun Batang", "Noto Sans KR", serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, 256, 68); t.needsUpdate = true; };
+      const paint = () => { g.fillStyle = bg; g.fillRect(0, 0, 512, 128); g.fillStyle = fg; g.font = '700 ' + (text.length > 9 ? 42 : 54) + 'px "Pretendard Variable", Pretendard, "Noto Sans KR", serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, 256, 68); t.needsUpdate = true; };
       const t = new T.CanvasTexture(cv); paint();
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(paint);
       return new T.Mesh(new T.PlaneGeometry(w, h), new T.MeshBasicMaterial({ map: t }));
@@ -1298,10 +1314,10 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         c.lineWidth = 3; [[32, 32, 1, 1], [608, 32, -1, 1], [32, 376, 1, -1], [608, 376, -1, -1]].forEach(([x, y, sx, sy]) => {
           c.beginPath(); c.moveTo(x + sx * 4, y + sy * 34); c.lineTo(x + sx * 4, y + sy * 4); c.lineTo(x + sx * 34, y + sy * 4); c.lineTo(x + sx * 34, y + sy * 22); c.lineTo(x + sx * 16, y + sy * 22); c.lineTo(x + sx * 16, y + sy * 14); c.stroke(); });
         c.fillStyle = '#2a2018'; c.textAlign = 'center'; c.textBaseline = 'middle';
-        c.font = '700 ' + (name.length > 9 ? 50 : 62) + 'px "Gowun Batang", "Noto Serif", serif'; c.fillText(name, 320, 172);
+        c.font = '700 ' + (name.length > 9 ? 50 : 62) + 'px "Pretendard Variable", Pretendard, "Noto Sans KR", serif'; c.fillText(name, 320, 172);
         c.strokeStyle = '#8a6a3a'; c.lineWidth = 2; c.beginPath(); c.moveTo(170, 230); c.lineTo(290, 230); c.moveTo(350, 230); c.lineTo(470, 230); c.stroke();
         c.fillStyle = '#8a6a3a'; c.beginPath(); c.arc(320, 230, 6, 0, Math.PI * 2); c.fill();
-        c.fillStyle = '#5a4a36'; c.font = '500 30px "Gowun Batang", "Noto Serif", serif'; c.fillText(place, 320, 282);
+        c.fillStyle = '#5a4a36'; c.font = '500 30px "Pretendard Variable", Pretendard, "Noto Sans KR", serif'; c.fillText(place, 320, 282);
         c.font = '500 22px "Noto Serif", serif'; c.fillStyle = '#8a6a3a'; c.fillText('· 살펴보면 이 방의 이야기를 읽을 수 있다 ·', 320, 340);
         t.needsUpdate = true;
       };
@@ -1317,7 +1333,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         const gr = c.createLinearGradient(0, 0, 0, 124); gr.addColorStop(0, '#8a6a3a'); gr.addColorStop(0.5, '#6e5230'); gr.addColorStop(1, '#4e3a22');
         c.fillStyle = gr; c.beginPath(); c.roundRect ? c.roundRect(4, 4, 504, 116, 14) : c.rect(4, 4, 504, 116); c.fill();
         c.strokeStyle = 'rgba(240,210,150,.45)'; c.lineWidth = 3; c.beginPath(); c.roundRect ? c.roundRect(12, 12, 488, 100, 9) : c.rect(12, 12, 488, 100); c.stroke();
-        c.font = '700 ' + (text.length > 9 ? 40 : 48) + 'px "Gowun Batang", "Noto Sans KR", serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
+        c.font = '700 ' + (text.length > 9 ? 40 : 48) + 'px "Pretendard Variable", Pretendard, "Noto Sans KR", serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
         c.fillStyle = 'rgba(30,18,6,.75)'; c.fillText(text, 257, 66); // 새긴 홈의 그림자
         c.fillStyle = '#ecd6a2'; c.fillText(text, 256, 64);
         t.needsUpdate = true;
@@ -1486,7 +1502,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     const cypressM = L(0x2f4a2e), caveRockM = L(0x6e655b);
     skin(leafM, 'leaves', 0xffffff, 2); skin(oliveM, 'leaves', 0xc8d6b4, 2); skin(cypressM, 'leaves', 0x7f9c74, 2); skin(caveRockM, 'rock', 0xd8ccb8, 1.5);
     // 퍼즐 사물의 핵심 부분(accent)에 입힐 재질. 풀면 색이 금빛으로 바뀌는데, 그림 위에 금빛이 덧칠된다
-    const ACCENT_MAT = { jesus: 'marble', mary: 'marble', diptych: 'wood', reliquary: 'iron', darkniche: 'iron', buttonlock: 'bronze', mover: 'bronze', bookstand: 'wool', podium: 'marble', stele: 'marble', stelekey: 'marble', tomb: 'marble', busts: 'marble', column: 'marble', stairs: 'marble', orator: 'marble', colred: 'bronze', colblue: 'bronze', armcol: 'bronze',
+    const ACCENT_MAT = { jesus: 'bronze', mary: 'bronze', diptych: 'wood', reliquary: 'iron', darkniche: 'iron', buttonlock: 'bronze', mover: 'bronze', bookstand: 'wool', podium: 'marble', stele: 'marble', stelekey: 'marble', tomb: 'marble', busts: 'marble', column: 'marble', stairs: 'marble', orator: 'marble', colred: 'bronze', colblue: 'bronze', armcol: 'bronze',
       table: 'wood', ledger: 'wood', board: 'wood', geoboard: 'wood', lawboard: 'wood', shelves: 'wood', frame: 'wood', desk: 'wood', notice: 'wood', clock: 'wood', friends: 'wood', tablets: 'wood',
       scales: 'bronze', chariot: 'bronze', armillary: 'bronze', rings: 'iron', chain: 'iron', sage: 'wool', stoic: 'wool' };
     // 앞면에 붙이는 그림(images/face_*.jpg): 석판 글씨 등. 사물 모양 안에 평평한 판으로 붙인다
@@ -1542,7 +1558,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       else if (kind === 'column') { add(g, B(0.7, 0.12, 0.7), stoneM, 0, 0.06, 0); add(g, C(0.2, 0.23, 1.7, 16), m, 0, 0.97, 0); add(g, B(0.6, 0.14, 0.6), stoneM, 0, 1.88, 0); }
       else if (kind === 'frame') { [-0.35, 0.35].forEach(x => add(g, B(0.05, 1.5, 0.05), woodD, x, 0.75, 0.15)); add(g, B(0.9, 0.7, 0.06), m, 0, 1.25, 0); add(g, B(0.74, 0.54, 0.02), ivoryM, 0, 1.25, 0.04); }
       else if (kind === 'stairs') { [0, 1, 2].forEach(i => add(g, B(1.1, 0.3, 0.9 - i * 0.28), i === 2 ? m : stoneM, 0, 0.15 + i * 0.3, -i * 0.14)); }
-      else if (kind === 'notice') { add(g, B(0.9, 1.9, 0.1), woodD, 0, 0.95, -0.2); for (let i = 0; i < 6; i++) add(g, B(0.22, 0.28, 0.01), ivoryM, -0.25 + (i % 3) * 0.25, 1.5 - Math.floor(i / 3) * 0.36, -0.14); add(g, B(0.9, 0.06, 0.4), woodM, 0, 0.7, 0.2); for (let i = 0; i < 7; i++) add(g, B(0.04, 0.16, 0.08), m, -0.33 + i * 0.11, 0.81, 0.2).rotation.z = i > 4 ? -0.8 : 0; }
+      else if (kind === 'notice') { add(g, B(0.9, 1.9, 0.1), woodD, 0, 0.95, -0.2); for (let i = 0; i < 6; i++) { const px = -0.25 + (i % 3) * 0.25, py = 1.5 - Math.floor(i / 3) * 0.36; add(g, B(0.22, 0.28, 0.01), ivoryM, px, py, -0.14); inscr(g, [['Ninety-five', 'Theses'], ['By faith', 'alone'], ['By grace', 'alone'], ['By Scripture', 'alone'], ['Wittenberg', '1517'], ['Every believer', 'a priest']][i], 0.2, 0.24, px, py, -0.128, { hi: false }); } add(g, B(0.9, 0.06, 0.4), woodM, 0, 0.7, 0.2); for (let i = 0; i < 7; i++) add(g, B(0.04, 0.16, 0.08), m, -0.33 + i * 0.11, 0.81, 0.2).rotation.z = i > 4 ? -0.8 : 0; }
       else if (kind === 'clock') { add(g, B(0.6, 2.0, 0.4), woodD, 0, 1.0, 0); add(g, C(0.22, 0.22, 0.04, 24), ivoryM, 0, 1.6, 0.21).rotation.x = Math.PI / 2; add(g, C(0.25, 0.25, 0.02, 24), m, 0, 1.6, 0.2).rotation.x = Math.PI / 2; const pend = add(g, B(0.03, 0.5, 0.03), m, 0, 0.9, 0.21); g.userData.pend = pend; }
       else if (kind === 'ledger') { add(g, B(1.0, 0.07, 0.6), woodM, 0, 0.75, 0); add(g, B(0.9, 0.72, 0.5), woodD, 0, 0.36, 0); add(g, B(0.5, 0.04, 0.35), ivoryM, 0, 0.8, 0); add(g, B(0.02, 0.05, 0.35), m, 0, 0.82, 0); }
       else if (kind === 'board') { [-0.5, 0.5].forEach(x => add(g, B(0.05, 1.7, 0.05), woodD, x, 0.85, 0)); add(g, B(1.2, 0.8, 0.05), m, 0, 1.25, 0); add(g, B(1.08, 0.68, 0.02), L(0x26453a), 0, 1.25, 0.03);
@@ -1554,7 +1570,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         g.add(model('board', m));
         add(g, new T.PlaneGeometry(1.2, 0.8), facePlate('face_board.jpg'), 0, 1.25, 0.056);
       }
-      else if (kind === 'desk') { add(g, B(1.1, 0.07, 0.7), woodM, 0, 0.75, 0); [[-.5, -.3], [.5, -.3], [-.5, .3], [.5, .3]].forEach(([x, z]) => add(g, B(0.06, 0.74, 0.06), woodD, x, 0.37, z)); add(g, B(0.7, 0.45, 0.04), L(0x26453a), 0, 1.05, -0.2).rotation.x = -0.25; add(g, B(0.76, 0.5, 0.03), m, 0, 1.05, -0.23).rotation.x = -0.25; }
+      else if (kind === 'desk') { add(g, B(1.1, 0.07, 0.7), woodM, 0, 0.75, 0); [[-.5, -.3], [.5, -.3], [-.5, .3], [.5, .3]].forEach(([x, z]) => add(g, B(0.06, 0.74, 0.06), woodD, x, 0.37, z)); add(g, B(0.7, 0.45, 0.04), L(0x26453a), 0, 1.05, -0.2).rotation.x = -0.25; add(g, B(0.76, 0.5, 0.03), m, 0, 1.05, -0.23).rotation.x = -0.25; inscr(g, ['Work is a calling', 'from God', 'be diligent and thrifty'], 0.62, 0.38, 0, 1.05, -0.172, { color: '#ece6d6', hi: false }).rotation.x = -0.25; }
       // ── 1장 고대 그리스에 새로 쓰는 모형 ──
       else if (kind === 'tablets') { // 고르기아스: 탁자 위 밀랍 판 세 장
         add(g, B(1.0, 0.07, 0.55), woodM, 0, 0.75, 0); [[-.45, -.22], [.45, -.22], [-.45, .22], [.45, .22]].forEach(([x, z]) => add(g, B(0.05, 0.74, 0.05), woodD, x, 0.37, z));
@@ -1605,15 +1621,18 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
           const fill = [[0, 1], [1, 3], [0, 2, 3]];
           fill.forEach((bs, k) => bs.forEach(b => add(g, B(0.1, 0.34, 0.22), i ? m : red, x - 0.18 + b * 0.12, 0.25 + k * 0.45, 0)));
           const lean = add(g, B(0.1, 0.34, 0.22), i ? red : m, x + 0.02, 0.24 + 0.45, 0); lean.rotation.z = -0.38;
+          (g.userData.leans = g.userData.leans || []).push({ o: lean, p1: new T.Vector3(x + 0.06, 0.25 + 0.45, 0), r1: new T.Euler(0, 0, 0) }); // 기댄 책도 바로 선다
         });
         // 바닥에 흩어진 책: 누운 책, 포개진 책, 펼쳐진 책
         const book = (x, z, ry, c, y = 0.03, tilt = 0) => { const bk = new T.Group(); bk.position.set(x, y, z); bk.rotation.set(tilt, ry, 0); g.add(bk); add(bk, B(0.24, 0.05, 0.17), c, 0, 0, 0); add(bk, B(0.22, 0.042, 0.005), pageM, 0, 0, 0.086); return bk; };
-        book(-0.45, 0.42, 0.4, red); book(-0.1, 0.62, -0.9, m); book(0.05, 0.6, -0.5, red, 0.08);
-        book(0.42, 0.38, 1.2, m); book(0.62, 0.72, 0.2, red); book(-0.62, 0.8, 2.3, m);
-        book(0.28, 0.95, -1.4, red, 0.06, 0.35);
+        const floorBooks = [book(-0.45, 0.42, 0.4, red), book(-0.1, 0.62, -0.9, m), book(0.05, 0.6, -0.5, red, 0.08),
+          book(0.42, 0.38, 1.2, m), book(0.62, 0.72, 0.2, red), book(-0.62, 0.8, 2.3, m), book(0.28, 0.95, -1.4, red, 0.06, 0.35)];
+        // 풀면(책 정리) 바닥의 책이 하나씩 날아올라 비어 있던 칸에 선다(userData.moves → anims의 move)
+        const slots = [[-0.33, 0, 2], [-0.33, 0, 3], [-0.33, 1, 0], [-0.33, 2, 1], [0.33, 0, 2], [0.33, 0, 3], [0.33, 1, 0]];
+        g.userData.moves = floorBooks.map((bk, i) => { const [x, k, b] = slots[i]; return { o: bk, p1: new T.Vector3(x - 0.18 + b * 0.12, 0.19 + k * 0.45, 0.02), r1: new T.Euler(0, Math.PI, Math.PI / 2) }; }); // 책등이 앞으로
         { const ob = new T.Group(); ob.position.set(-0.2, 0.02, 1.0); ob.rotation.y = 0.5; g.add(ob); // 펼쳐진 책
           [-1, 1].forEach(s => { const leaf = add(ob, B(0.16, 0.012, 0.22), pageM, s * 0.08, 0.02, 0); leaf.rotation.z = s * -0.12; });
-          add(ob, B(0.34, 0.01, 0.24), m, 0, 0.004, 0); }
+          add(ob, B(0.34, 0.01, 0.24), m, 0, 0.004, 0); g.userData.openBook = { o: ob, p1: new T.Vector3(0.33, 1.53, 0.02), r1: new T.Euler(0, 0.2, 0) }; } // 펼친 책은 책장 위로
       }
       else if (kind === 'busts') { // 두 철학자의 흉상: 마주 보는 두 받침대
         // 공 모양을 찰흙처럼 눌러 빚고(정점 변형), 받침대는 돌려 깎고(Lathe), 수염·머리는 곱슬 덩어리(InstancedMesh)로 붙인다
@@ -1744,13 +1763,15 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         [1.0, 2.3].forEach(y => add(g, new T.TorusGeometry(0.255, 0.03, 6, 24), m, 0, y, 0).rotation.x = Math.PI / 2);
         const pq = new T.Group(); g.add(pq); // 물음 목판(블렌더 모델 obj_kit_colplaque: 테두리, 새긴 글줄, 청동 모서리, 못에 건 끈)
         add(pq, B(0.36, 0.56, 0.035), m, 0, 1.6, 0.25); add(pq, B(0.4, 0.04, 0.05), goldM, 0, 1.9, 0.26); add(pq, B(0.4, 0.04, 0.05), goldM, 0, 1.3, 0.26);
-        for (let i = 0; i < 4; i++) add(pq, B(0.24 - (i % 2) * 0.06, 0.02, 0.01), darkM, 0, 1.76 - i * 0.1, 0.27); // 새긴 글줄
+        inscr(pq, { colred: ['Live in agreement', 'with nature', 'λόγος'], colblue: ['Not things, but our', 'opinions of things', 'disturb us', 'ἀπάθεια'], armcol: ['I am a citizen', 'of the world', 'κοσμοπολίτης'] }[kind], 0.3, 0.46, 0, 1.6, 0.275); // 새긴 글
         loadKit('colplaque', pq, m);
       }
       // ── 3장 중세 ──
       else if (kind === 'jesus' || kind === 'mary') { // 수도원 입구의 석상: 몰딩 받침(앞면 글판이 accent) + 옷자락 긴 인물 + 금빛 후광
         add(g, B(0.9, 0.12, 0.9), stoneM, 0, 0.06, 0); add(g, B(0.72, 0.62, 0.72), stoneM, 0, 0.43, 0); add(g, B(0.84, 0.1, 0.84), stoneM, 0, 0.79, 0);
         add(g, B(0.46, 0.3, 0.02), m, 0, 0.45, 0.37); // 받침 앞 글판
+        inscr(g, kind === 'jesus' ? ['Love thy neighbour', 'as thyself'] : ['Blessed are', 'the merciful'], 0.42, 0.25, 0, 0.45, 0.385, { color: '#140a00', hi: 'rgba(255,236,190,.7)', size: 0.95 });
+        if (kind === 'jesus') inscr(g, ['Ἰησοῦς ὁ Ναζωραῖος'], 0.21, 0.085, 0, 2.34, -0.118); // 십자가 위 명패(스캔 모델의 나무 십자가)
         const robe = kind === 'mary' ? blueClothM : stoneM;
         add(g, new T.CylinderGeometry(0.17, 0.33, 1.25, 18), robe, 0, 1.47, 0);
         add(g, new T.CylinderGeometry(0.2, 0.2, 0.3, 18), stoneM, 0, 1.95, 0); // 어깨
@@ -1782,12 +1803,14 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
           add(pg, new T.PlaneGeometry(0.54, 0.76), new T.MeshLambertMaterial({ map: city(s < 0) }), 0, 0, 0.02);
         });
         add(g, B(1.3, 0.08, 0.3), woodD, 0, 0.78, 0.02); add(g, B(0.7, 0.14, 0.03), m, 0, 0.66, 0.17);
+        inscr(g, ['The City of God  ·  The City of Man'], 0.68, 0.12, 0, 0.66, 0.187);
       }
       else if (kind === 'reliquary') { // 네 가지 덕의 함: 다리 달린 나무 함, 2×2 작은 문, 금빛 테, 은빛 자물쇠판(accent), 위의 십자가
         [[-0.38, -0.18], [0.38, -0.18], [-0.38, 0.18], [0.38, 0.18]].forEach(([x, z]) => add(g, B(0.06, 0.5, 0.06), woodD, x, 0.25, z));
         add(g, B(0.92, 0.95, 0.46), woodD, 0, 0.98, 0); add(g, B(0.98, 0.06, 0.52), goldM, 0, 1.48, 0); add(g, B(0.98, 0.06, 0.52), goldM, 0, 0.5, 0);
         [[-0.22, 1.2], [0.22, 1.2], [-0.22, 0.76], [0.22, 0.76]].forEach(([x, y]) => { add(g, B(0.38, 0.38, 0.02), woodM, x, y, 0.235); add(g, B(0.4, 0.02, 0.025), goldM, x, y + 0.19, 0.24); add(g, new T.SphereGeometry(0.018, 8, 6), goldM, x + 0.14, y, 0.25); });
         add(g, B(0.12, 0.16, 0.03), m, 0, 0.98, 0.26);
+        [['φρόνησις', -0.22, 1.2], ['ἀνδρεία', 0.22, 1.2], ['σωφροσύνη', -0.22, 0.76], ['δικαιοσύνη', 0.22, 0.76]].forEach(([w, x, y]) => inscr(g, [w], 0.34, 0.11, x, y - 0.1, 0.248, { color: '#f2d58a', hi: 'rgba(40,20,0,.5)' })); // 지혜·용기·절제·정의
         add(g, B(0.05, 0.3, 0.05), goldM, 0, 1.66, 0); add(g, B(0.2, 0.05, 0.05), goldM, 0, 1.7, 0);
       }
       else if (kind === 'darkniche') { // 어두운 벽감: 아치 진 돌 벽감, 깊은 어둠, 앞의 쇠 촛대(accent), 바닥의 석판
@@ -1797,25 +1820,30 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         const archR = add(g, new T.TorusGeometry(0.5, 0.05, 6, 24, Math.PI), stoneM, 0, 1.85, 0.0); archR.rotation.z = 0;
         [-0.5, 0.5].forEach(x => add(g, B(0.1, 1.4, 0.1), stoneM, x, 1.15, 0.0));
         add(g, C(0.12, 0.16, 0.05, 12), ironM, 0, 0.03, 0.35); add(g, C(0.02, 0.03, 0.9, 8), ironM, 0, 0.48, 0.35); add(g, C(0.08, 0.05, 0.06, 12), m, 0, 0.95, 0.35);
+        const cd = add(g, C(0.028, 0.03, 0.2, 12), ivoryM, 0, 1.08, 0.35); cd.visible = false; g.userData.candle = cd; g.userData.flameAt = new T.Vector3(0, 1.24, 0.35); // 함에서 얻은 초: 꽂으면 불이 켜진다
         add(g, B(0.8, 0.04, 0.4), stoneM, 0, 0.45, -0.05);
+        g.userData.reveal = inscr(g, ['Evil is not a thing,', 'but the absence of good'], 0.82, 0.36, 0, 1.3, -0.01, { color: '#d8b46a', hi: false }); // 초를 꽂아야 드러나는 글
       }
       else if (kind === 'buttonlock') { // 사랑의 질서(ORDO AMORIS) 돌벽: 블렌더 모델 obj_kit_buttonlock(꼬인 기둥, 박공, 불타는 심장 accent, 새김 글씨, 석판 자리)
         add(g, B(1.7, 0.28, 0.6), stoneM, 0, 0.14, -0.02); add(g, B(1.5, 2.0, 0.26), stoneM, 0, 1.28, -0.05); add(g, C(0.1, 0.12, 0.04, 16), m, 0, 2.55, 0.05).rotation.x = Math.PI / 2;
-        // 석판 여덟 장(모델이 와도 남는다): 줄마다 왼쪽 ‘사용 uti’, 오른쪽 ‘향유 frui’. 풀면 맞는 쪽 석판이 벽 속으로 눌려 들어간다(userData.tabs)
-        const tabTex = (big, small) => canvasTex(256, 216, c => {
-          const gr = c.createLinearGradient(0, 0, 0, 216); gr.addColorStop(0, '#d9d2c4'); gr.addColorStop(1, '#b8af9e'); c.fillStyle = gr; c.fillRect(0, 0, 256, 216);
-          c.strokeStyle = 'rgba(60,50,40,.55)'; c.lineWidth = 8; c.strokeRect(10, 10, 236, 196);
-          c.textAlign = 'center'; c.fillStyle = '#4a3c2c'; c.font = 'bold 76px serif'; c.fillText(big, 128, 112); c.font = 'italic 44px serif'; c.fillText(small, 128, 176);
-        });
-        const texL = tabTex('사용', 'uti'), texR = tabTex('향유', 'frui'), tabs = [];
+        // 석판 여덟 장(모델이 와도 남는다): 줄마다 왼쪽 Use(사용), 오른쪽 Enjoy(향유). 풀면 맞는 쪽 석판이 벽 속으로 눌려 들어간다(userData.tabs)
+        // 가운데 청동판에는 그 줄의 문장을 영어 필기체로 새긴다(문제의 네 문장과 같은 순서)
+        [['To love God', 'for His own sake'], ['To keep an ox', 'for the plough'], ['To long for eternal', 'peace in God'], ['To save money', 'to buy books']].forEach((s2, r) => inscr(g, s2, 0.38, 0.17, 0, [1.78, 1.46, 1.14, 0.82][r], 0.1, { color: '#140a00', hi: 'rgba(255,236,190,.7)', size: 0.95 }));
+        const tabs = []; // 석판 글씨: 왼쪽 Use(사용), 오른쪽 Enjoy(향유)
         [1.78, 1.46, 1.14, 0.82].forEach((y, r) => [-1, 1].forEach(s => {
           const tg = new T.Group(); tg.position.set(s * 0.42, y, 0.12); tg.userData.keep = true; g.add(tg);
           add(tg, B(0.27, 0.23, 0.07), stoneM, 0, 0, 0);
-          const lm = new T.MeshLambertMaterial({ map: s < 0 ? texL : texR }); add(tg, new T.PlaneGeometry(0.25, 0.21), lm, 0, 0, 0.036);
+          const lb = inscribe([s < 0 ? 'Use' : 'Enjoy'], 0.25, 0.2, { size: 1.0 }); lb.position.z = 0.037; tg.add(lb); const lm = lb.material;
           tabs.push({ o: tg, r, s, lm });
         }));
         g.userData.tabs = tabs;
-      }      else if (kind === 'mover') { // 움직임의 탁자: 긴 탁자 위 도미노 줄과 맞물린 톱니바퀴(accent)
+        // 청동 손잡이(벽감에서 얻은 것): 꽂으면 구멍에 보이고, 풀면 옆으로 돌아간다(userData.handle)
+        const hd = new T.Group(); hd.position.set(0, 0.55, 0.09); hd.userData.keep = true; hd.visible = false; g.add(hd);
+        add(hd, C(0.022, 0.022, 0.14, 12), bronzeM, 0, 0, 0.07).rotation.x = Math.PI / 2; add(hd, C(0.04, 0.03, 0.03, 14), goldM, 0, 0, 0.015).rotation.x = Math.PI / 2;
+        add(hd, B(0.3, 0.04, 0.04), bronzeM, 0, 0, 0.145); [-0.15, 0.15].forEach(x => add(hd, new T.SphereGeometry(0.035, 12, 10), goldM, x, 0, 0.145));
+        g.userData.handle = hd;
+      }
+      else if (kind === 'mover') { // 움직임의 탁자: 긴 탁자 위 도미노 줄과 맞물린 톱니바퀴(accent)
         add(g, B(1.7, 0.07, 0.6), woodM, 0, 0.78, 0); [[-0.78, -0.25], [0.78, -0.25], [-0.78, 0.25], [0.78, 0.25]].forEach(([x, z]) => add(g, B(0.06, 0.76, 0.06), woodD, x, 0.38, z));
         for (let i = 0; i < 22; i++) { const d = add(g, B(0.025, 0.14, 0.07), ivoryM, -0.75 + i * 0.055, 0.88, Math.sin(i * 0.5) * 0.08); if (i < 5) { d.rotation.z = -1.2; d.position.y = 0.84; } }
         const gear = new T.Group(); gear.position.set(0.62, 1.12, -0.18); g.add(gear);
@@ -1831,6 +1859,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         add(top, B(0.6, 0.06, 0.42), m, 0, 0.05, 0);
         [-0.14, 0.14].forEach(x => { const pg = add(top, B(0.27, 0.025, 0.38), ivoryM, x, 0.095, 0); pg.rotation.z = x > 0 ? -0.06 : 0.06; });
         add(top, B(0.04, 0.03, 0.1), ironM, 0.31, 0.06, 0);
+        inscr(top, ['Grace does not destroy', 'nature, but perfects it'], 0.5, 0.3, 0, 0.112, 0.01, { hi: false }, true);
       }
       else if (kind === 'armillary') { // 세계 시민주의: 청동 천구의
         add(g, C(0.3, 0.38, 0.12, 16), stoneM, 0, 0.06, 0); add(g, C(0.05, 0.07, 0.9, 10), bronzeM, 0, 0.55, 0);
@@ -1924,6 +1953,31 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     }
 
     // ── 1장 방마다 다른 꾸밈 ──
+    // 맵 안의 새김 글씨(영어·그리스어 필기체). lines를 판 크기(w×h m)에 맞춰 그린 투명 판을 돌려준다. 글꼴이 늦게 오면 다시 그린다
+    // o: { color 글자색, hi 새긴 홈의 밝은 테두리색, bg 바탕색, size 줄 높이 대비 글자 크기 }
+    const INSCR_EN = '"Pinyon Script", "Segoe Script", cursive', INSCR_GR = '"EB Garamond", "Noto Serif", serif';
+    function inscribe(lines, w, h, o) {
+      o = o || {}; const cw = 1024, ch = Math.max(64, Math.round(cw * h / w)), cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
+      const c = cv.getContext('2d'), tex = new T.CanvasTexture(cv); tex.anisotropy = aniso;
+      const paint = () => {
+        c.clearRect(0, 0, cw, ch); if (o.bg) { c.fillStyle = o.bg; c.fillRect(0, 0, cw, ch); }
+        const lh = ch / (lines.length + 0.35);
+        lines.forEach((ln, i) => {
+          const gr = /[Ͱ-Ͽἀ-῿]/.test(ln), font = s => (gr ? 'italic 500 ' : '400 ') + s + 'px ' + (gr ? INSCR_GR : INSCR_EN);
+          let s = lh * (o.size || (gr ? 0.66 : 0.86)); c.font = font(s);
+          while (c.measureText(ln).width > cw * 0.92 && s > 10) { s *= 0.93; c.font = font(s); }
+          c.textAlign = 'center'; c.textBaseline = 'middle'; const y = lh * (i + 0.68);
+          if (o.hi !== false) { c.fillStyle = o.hi || 'rgba(255,244,220,.45)'; c.fillText(ln, cw / 2 + s * 0.03, y + s * 0.04); }
+          c.fillStyle = o.color || '#2a1c10'; c.fillText(ln, cw / 2, y);
+        });
+        tex.needsUpdate = true;
+      };
+      paint();
+      if (document.fonts && document.fonts.load) Promise.all([document.fonts.load('40px "Pinyon Script"'), document.fonts.load('italic 500 40px "EB Garamond"')]).then(paint, () => {});
+      const mt = new T.MeshLambertMaterial({ map: tex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
+      const mesh = new T.Mesh(new T.PlaneGeometry(w, h), mt); mesh.userData.keep = true; return mesh;
+    }
+    const inscr = (g, lines, w, h, x, y, z, o, flat) => { const mm = inscribe(lines, w, h, o); mm.position.set(x, y, z); if (flat) mm.rotation.x = -Math.PI / 2; g.add(mm); return mm; };
     function canvasTex(w, h, paint) { const cv = document.createElement('canvas'); cv.width = w; cv.height = h; paint(cv.getContext('2d')); const t = new T.CanvasTexture(cv); t.wrapS = t.wrapT = T.RepeatWrapping; return t; }
     // 담 너머 먼 배경(그림이 없을 때 쓰는 밤하늘·언덕 실루엣)
     function skyTex(kind) {
@@ -2430,7 +2484,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         [[-2.9, 6.2], [-2.9, -6.2]].forEach(([x, z]) => oilLamp(g, ri, ...P(x, z)));
         bench(g, ...P(-2.95, 3.0), 1.4, Math.PI / 2, stoneM);
         // 기둥과 벽 사이의 두루마리 함과 낮은 의자(철학자들이 읽던 자리)
-        kitProp(g, 'capsa', -2.85, cz - 4.0, Math.PI / 2, 0.3, 0.45); kitProp(g, 'capsa', 2.85, cz + 3.0, -Math.PI / 2, 0.3, 0.45);
+        [kitProp(g, 'capsa', -2.85, cz - 4.0, Math.PI / 2, 0.3, 0.45), kitProp(g, 'capsa', 2.85, cz + 3.0, -Math.PI / 2, 0.3, 0.45)].forEach(pg => inscr(pg, ['Ἐν ἀρχῇ ἦν ὁ λόγος'], 0.36, 0.17, 0.12, 0.012, 0.3, { hi: false }, true)); // 펼친 두루마리의 글
       }
       if (k === 'hellenism') {
         [[-6.1, 5.2], [-6.1, -5.4], [2.6, -5.6]].forEach(([x, dz]) => { add(g, C(0.1, 0.12, 0.8, 8), woodD, x, 0.4, cz + dz); add(g, new T.ConeGeometry(0.6, 1.8, 10), L(0x3f6b34), x, 1.6, cz + dz); blob(g, x, cz + dz, 1.5); col(x - 0.3, x + 0.3, cz + dz - 0.3, cz + dz + 0.3); });
@@ -2547,8 +2601,14 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         if (/^(colred|colblue|armcol)$/.test(p.model)) { // 회랑 기둥: 표시가 기둥 속에 묻히지 않게 목판 앞으로 꺼내 둔다
           mk.position.x = p.x + Math.sin(p.face) * 0.55; mk.position.z = cz + p.z + Math.cos(p.face) * 0.55; rec.mkY = 2.3 + by;
         }
-        if (o.userData.tabs) o.userData.tabs.forEach(tb => { const right = (p.rows[tb.r][1] === p.left ? -1 : 1) === tb.s; anims.push({ o: tb.o, pos: 'z', on: () => !!S.solved[p.id] && right, a0: 0.12, a1: 0.06, glow: tb.lm }); }); // 사랑의 질서: 맞는 석판이 눌려 들어간다
-        if (o.userData.hatch) anims.push({ o: o.userData.hatch, axis: 'y', on: () => !!S.solved[p.id], a0: 0, a1: -1.9 }); // 풀면 비석 받침의 작은 문이 열린다
+        if (o.userData.moves) { // 탁월함의 서가: 바닥 책 → 빈 칸, 기댄 책 → 똑바로, 펼친 책 → 책장 위 (책마다 빠르기를 달리해 하나씩 날아오르게)
+          const mv = o.userData.moves.concat(o.userData.leans || [], o.userData.openBook ? [o.userData.openBook] : []);
+          mv.forEach((m2, i) => anims.push({ o: m2.o, move: true, p0: m2.o.position.clone(), r0: m2.o.rotation.clone(), p1: m2.p1, r1: m2.r1, on: () => done(p.id), k: S.solved[p.id] ? 1 : 0, sp: 0.7 + i * 0.12 }));
+        }
+        if (o.userData.handle) anims.push({ o: o.userData.handle, axis: 'z', on: () => done(p.id), a0: 0, a1: Math.PI / 2 }); // 풀면 손잡이가 돌아간다
+        if (o.userData.flameAt) { o.updateMatrix(); const wp = o.userData.flameAt.clone().applyMatrix4(o.matrix); rec.fire = flame(g, ri, wp.x, wp.y, wp.z, 0.55, true, 0xffb35a, 0.9); rec.fire.sp.visible = false; rec.fire.max = 0; }
+        if (o.userData.tabs) o.userData.tabs.forEach(tb => { const right = (p.rows[tb.r][1] === p.left ? -1 : 1) === tb.s; anims.push({ o: tb.o, pos: 'z', on: () => done(p.id) && right, a0: 0.12, a1: 0.06, glow: tb.lm }); }); // 사랑의 질서: 맞는 석판이 눌려 들어간다
+        if (o.userData.hatch) anims.push({ o: o.userData.hatch, axis: 'y', on: () => done(p.id), a0: 0, a1: -1.9 }); // 풀면 비석 받침의 작은 문이 열린다
         // 3D 모델(models/obj_이름.glb)이 있는 사물은 그림 판 대신 진짜 입체 모델을 세운다
         if (gltf && MODELS.includes(p.id)) {
           gltf.load('models/obj_' + p.id.replace(/-/g, '_') + '.glb', res => {
@@ -2692,7 +2752,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       return best;
     }
     function interact() {
-      if (modalOpen() || !S.playing) return;
+      if (modalOpen() || !S.playing || cut) return; // 컷인 중에는 살펴보기 막기
       const it = focus; if (!it) return;
       if (it.kind === 'sign') return showPlaque(it.room);
       if (it.kind === 'torch') return takeLamp();
@@ -2754,19 +2814,62 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       });
       // 등불을 옮겨 붙이면 거치대의 불과 표시가 꺼진다
       const tr = objs.__torch;
+      ROOMS.forEach(r => r.puzzles.forEach(p => { const o = objs[p.id]; if (!o) return; const ins = !!(S.solved[p.id] || (S.seen && S.seen['ins:' + p.id])); // 문제에 꽂아 넣은 물건(손잡이·초)
+        if (o.o.userData.handle) o.o.userData.handle.visible = ins;
+        if (o.o.userData.reveal) o.o.userData.reveal.visible = ins;
+        if (o.o.userData.candle) { o.o.userData.candle.visible = ins; if (o.fire) { o.fire.sp.visible = ins; o.fire.max = ins ? 0.9 : 0; } }
+      }));
       Object.values(objs).forEach(o => { if (o.seenKey) o.mk.visible = !(S.seen && S.seen[o.seenKey]); }); // 방의 쪽지
       if (tr) { tr.mk.visible = !S.lampGot; tr.fire.sp.visible = !S.lampGot; tr.fire.max = S.lampGot ? 0 : 0.95; }
       setPrompt();
     };
     // 장을 고르면 그 장의 방들로 공간을 새로 짓고, 저장된 자리에 선다
     // 장을 바꿀 때: 이전 장의 사물을 가리키던 시선(focus)을 먼저 비운다(방 수가 달라 엉뚱한 방을 찾다 멈추던 문제)
-    G.build = () => { focus = null; G.focus = null; buildWorld(); lastRoom = -1; focus = null; G.focus = null; doors.forEach((d, i) => { d.open = S.opened[ROOMS[i].id] && i < ROOMS.length - 1 ? 1 : 0; }); G.sync(); };
+    G.build = () => { focus = null; G.focus = null; Object.keys(held).forEach(k => delete held[k]); cutQ.length = 0; cut = null; if (bars) bars.classList.remove('on'); buildWorld(); lastRoom = -1; focus = null; G.focus = null; doors.forEach((d, i) => { d.open = S.opened[ROOMS[i].id] && i < ROOMS.length - 1 ? 1 : 0; }); G.sync(); };
     G.place = p => { pos.x = p.x; pos.z = p.z; pos.y = groundY(p.x, p.z); yaw = p.yaw || 0; pitch = 0; };
 
     const clock = new T.Clock(); let mapT = 0;
+    // ── 컷인: 문제를 풀거나 문을 열면 화면 위아래가 검게 좁아지고, 카메라가 그 사물 앞으로 날아가 움직임을 보여 준 뒤 돌아온다 ──
+    // held[id]가 있는 동안 그 사물의 움직임(anims·저울·문)은 기다린다. 카메라가 도착하면 풀어 준다
+    bars = document.createElement('div'); bars.className = 'cutbars'; bars.innerHTML = '<i></i><i></i><span>클릭하면 넘어가요</span>'; host.appendChild(bars);
+    const hasMotion = id => { const o = objs[id] && objs[id].o.userData; return !!(o && (o.tabs || o.moves || o.hatch || o.beam || o.handle)); };
+    G.queueCut = key => {
+      if (key.startsWith('door:')) { const i = +key.slice(5); if (i >= ROOMS.length - 1) return; }
+      else if (!hasMotion(key)) return;
+      if (reduce) return; // 움직임을 줄이는 설정이면 컷인 없이 바로 움직인다
+      held[key] = true; cutQ.push(key);
+    };
+    G.afterModal = () => { if (!cut && cutQ.length) startCut(cutQ.shift()); };
+    function startCut(key) {
+      let tp, look;
+      if (key.startsWith('door:')) {
+        const i = +key.slice(5), cz = -i * RS, yb = roomBase(i), down = ROOMS[i + 1].down;
+        look = new T.Vector3(0, yb + (down ? 0 : 1.2), cz - HD + (down ? 1.3 : 0));
+        tp = down ? new T.Vector3(0.6, yb + 2.3, cz - HD + 5.2) : new T.Vector3(0.5, yb + 1.6, cz - HD + 3.6);
+      } else {
+        const o = objs[key].o, p = findP(key), wp = new T.Vector3(); o.getWorldPosition(wp);
+        const big = /buttonlock|shelves|scales/.test(p.model), dist = big ? 2.5 : 2.2;
+        look = wp.clone().add(new T.Vector3(0, big ? 1.2 : 0.9, 0));
+        tp = wp.clone().add(new T.Vector3(Math.sin(p.face) * dist + Math.cos(p.face) * 0.5, big ? 1.45 : 1.4, Math.cos(p.face) * dist - Math.sin(p.face) * 0.5));
+      }
+      const d = look.clone().sub(tp), cy = Math.atan2(-d.x, -d.z), cpch = Math.atan2(d.y, Math.hypot(d.x, d.z));
+      cut = { key, t: 0, from: new T.Vector3(pos.x, 1.6 + pos.y, pos.z), fy: yaw, fp: pitch, tp, cy, cpch, released: false };
+      bars.classList.add('on'); host.classList.add('cutting'); sfx('page');
+    }
+    const ease = k => k * k * (3 - 2 * k), angLerp = (a, b, k) => a + Math.atan2(Math.sin(b - a), Math.cos(b - a)) * k;
+    function runCut(dt) {
+      const IN = 0.9, HOLD = cut.key.startsWith('door:') ? 2.2 : 3.0, OUT = 0.8; cut.t += dt;
+      let k; if (cut.t < IN) k = ease(cut.t / IN); else if (cut.t < IN + HOLD) k = 1; else k = 1 - ease(Math.min(1, (cut.t - IN - HOLD) / OUT));
+      if (cut.t >= IN && !cut.released) { cut.released = true; delete held[cut.key]; sfx(cut.key.startsWith('door:') ? 'door' : 'ok'); }
+      camera.position.lerpVectors(cut.from, cut.tp, k);
+      camera.rotation.set(cut.fp + (cut.cpch - cut.fp) * k, angLerp(cut.fy, cut.cy, k), 0);
+      if (cut.t >= IN + HOLD + OUT) endCut();
+    }
+    function endCut() { if (!cut) return; delete held[cut.key]; cut = null; bars.classList.remove('on'); host.classList.remove('cutting'); if (cutQ.length) startCut(cutQ.shift()); }
+    bars.addEventListener('click', () => { if (cut) { cut.t = Math.max(cut.t, 0.9 + 3.0); delete held[cut.key]; cut.released = true; } }); // 건너뛰기: 바로 되돌아온다
     function loop() {
       const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
-      if (S.playing && !modalOpen()) {
+      if (S.playing && !modalOpen() && !cut) {
         let f = 0, s2 = 0, turn = 0;
         if (keys.KeyW || keys.ArrowUp) f += 1; if (keys.KeyS || keys.ArrowDown) f -= 1;
         if (keys.KeyD) s2 += 1; if (keys.KeyA) s2 -= 1;
@@ -2791,12 +2894,12 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         const cp = cur().pos; cp.x = pos.x; cp.z = pos.z; cp.yaw = yaw;
       }
       { const gy = groundY(pos.x, pos.z); pos.y += (gy - pos.y) * Math.min(1, dt * 12); if (Math.abs(gy - pos.y) < 0.002) pos.y = gy; }
-      camera.position.set(pos.x, 1.6 + pos.y, pos.z); camera.rotation.y = yaw; camera.rotation.x = pitch;
+      if (cut) runCut(dt); else { camera.position.set(pos.x, 1.6 + pos.y, pos.z); camera.rotation.set(pitch, yaw, 0); }
       const nf = S.playing ? pickFocus() : null;
       if (nf !== focus) { focus = nf; G.focus = nf; setPrompt(); }
-      Object.keys(objs).forEach(id => { const o = objs[id]; o.ring.visible = !!(focus && focus.id === id); if (!reduce) { o.mk.rotation.y = t * 1.8; o.mk.position.y = o.mkY + Math.sin(t * 2.4 + o.o.position.x) * 0.06; } else o.mk.position.y = o.mkY; if (o.o.userData.beam) { const target = S.solved[id] ? 0 : 0.18 * (reduce ? 1 : Math.sin(t * 1.3)); o.o.userData.beam.rotation.z += (target - o.o.userData.beam.rotation.z) * Math.min(1, dt * 4); } if (o.o.userData.pend && !reduce) o.o.userData.pend.rotation.z = Math.sin(t * 3) * 0.25; if (o.ring.visible) o.ring.material.opacity = 0.55 + 0.45 * Math.sin(t * 5); });
-      doors.forEach((d, i) => { const target = S.opened[ROOMS[i].id] && i < ROOMS.length - 1 ? 1 : 0; d.open += (target - d.open) * Math.min(1, dt * 2.5); if (d.hatch) { d.pivot.rotation.z = d.open * 1.75; d.pivot2.rotation.z = -d.open * 1.75; } else d.pivot.rotation.y = d.open * 1.75; });
-      anims.forEach(a => { const tg = a.on() ? a.a1 : a.a0, tr = a.pos ? a.o.position : a.o.rotation, k = a.pos || a.axis; tr[k] += (tg - tr[k]) * Math.min(1, dt * 2.2); if (a.glow) a.glow.emissive.setHex(a.on() ? 0x6a4410 : 0); });
+      Object.keys(objs).forEach(id => { const o = objs[id]; o.ring.visible = !!(focus && focus.id === id); if (!reduce) { o.mk.rotation.y = t * 1.8; o.mk.position.y = o.mkY + Math.sin(t * 2.4 + o.o.position.x) * 0.06; } else o.mk.position.y = o.mkY; if (o.o.userData.beam) { const target = done(id) ? 0 : 0.18 * (reduce ? 1 : Math.sin(t * 1.3)); o.o.userData.beam.rotation.z += (target - o.o.userData.beam.rotation.z) * Math.min(1, dt * 4); } if (o.o.userData.pend && !reduce) o.o.userData.pend.rotation.z = Math.sin(t * 3) * 0.25; if (o.ring.visible) o.ring.material.opacity = 0.55 + 0.45 * Math.sin(t * 5); });
+      doors.forEach((d, i) => { const target = S.opened[ROOMS[i].id] && i < ROOMS.length - 1 && !held['door:' + i] ? 1 : 0; d.open += (target - d.open) * Math.min(1, dt * 2.5); if (d.hatch) { d.pivot.rotation.z = d.open * 1.75; d.pivot2.rotation.z = -d.open * 1.75; } else d.pivot.rotation.y = d.open * 1.75; });
+      anims.forEach(a => { if (a.move) { const tk = a.on() ? 1 : 0; a.k += (tk - a.k) * Math.min(1, dt * a.sp); const k = a.k, e = k * k * (3 - 2 * k); a.o.position.lerpVectors(a.p0, a.p1, e); a.o.position.y += Math.sin(Math.PI * e) * 0.35; a.o.rotation.set(a.r0.x + (a.r1.x - a.r0.x) * e, a.r0.y + (a.r1.y - a.r0.y) * e, a.r0.z + (a.r1.z - a.r0.z) * e); return; } const tg = a.on() ? a.a1 : a.a0, tr = a.pos ? a.o.position : a.o.rotation, k = a.pos || a.axis; tr[k] += (tg - tr[k]) * Math.min(1, dt * 2.2); if (a.glow) a.glow.emissive.setHex(a.on() ? 0x6a4410 : 0); });
       const ri = roomOf(pos.z);
       if (ri !== lastRoom) {
         if (lastRoom !== -1 && S.playing) toast(ri);
