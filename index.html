@@ -1345,7 +1345,10 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     // 밤의 서고: 아주 어두운 바탕빛 + 푸른 달빛 + 방마다 놓인 불빛 + 손에 든 등불
     // 바탕빛과 달빛의 세기는 방마다 바꿀 수 있다(theme의 amb·sun). 감옥은 아주 어둡게 해서 등불을 쓰게 한다
     const hemi = new T.HemisphereLight(0x9fb4d8, 0x1a1410, 0.22); scene.add(hemi);
-    const dl = new T.DirectionalLight(0x8fa8d8, 0.12); dl.position.set(-4, 10, 6); scene.add(dl);
+    const dl = new T.DirectionalLight(0x8fa8d8, 0.12); dl.position.set(-4, 10, 6); scene.add(dl); scene.add(dl.target);
+    renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap; // 실제 그림자(theme.shadow 방에서만 빛이 그림자를 드리운다)
+    dl.shadow.mapSize.set(1024, 1024); Object.assign(dl.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9, near: 1, far: 30 }); dl.shadow.bias = -0.0008; dl.shadow.normalBias = 0.02;
+    let shadowLights = [];
     scene.add(camera);
     const lantern = new T.PointLight(0xffd59a, 1.15, 8.5, 2); lantern.position.set(0.25, -0.15, -0.2); camera.add(lantern);
     // 장마다 새로 채우는 목록들 (buildWorld가 비우고 다시 만든다)
@@ -1511,31 +1514,31 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     const GREEK_TX = { floor: 'greece_floor.jpg', fr: 3, wall: 'greece_wall.jpg', ceil: 'greece_ceiling.jpg', cr: 3, door: 'greece_door.jpg', hideBand: true };
     const greekFloor = tex('#e8e2d3', '#d6cdb8', 8);
     const TH = {
-      agora:   { hw: 7, h: 3.8, open: true, side: 2.1, sky: 'agora', skyFile: 'agora_sky.jpg', floor: tex('#b9ae98', '#a99e88', 7), wall: 0xd9c9b0, band: 0x2f5f8f, ceil: 0x9fc4e4,
+      agora:   { shadow: true, sun: 0.22, hw: 7, h: 3.8, open: true, side: 2.1, sky: 'agora', skyFile: 'agora_sky.jpg', floor: tex('#b9ae98', '#a99e88', 7), wall: 0xd9c9b0, band: 0x2f5f8f, ceil: 0x9fc4e4,
         tx: { floor: ['agora_ground.jpg', 'greece_floor.jpg'], fr: 3, wall: ['agora_wall.jpg', 'greece_wall.jpg'], door: 'greece_door.jpg', hideBand: true }, part: 'none', bb: 0x8a6a45, tint: 0xf0ece4, grade: 'saturate(.95) contrast(1.08) brightness(1.1)' },
       prison:  { singleDoor: true, hw: 3.2, h: 2.7, amb: 0.05, sun: 0.02, dark: true, floor: tex('#6a5a48', '#5a4c3c', 6), wall: 0x6e655b, band: 0x3a3632, ceil: 0x2c2826,
         tx: { floor: ['prison_floor.jpg', 'medieval_floor.jpg'], fr: 2, wall: ['prison_wall.jpg', 'medieval_wall.jpg'], ceil: ['prison_ceiling.jpg', 'medieval_ceiling.jpg'], cr: 1.5, door: ['prison_door.jpg', 'medieval_door.jpg'], hideBand: true }, part: 'none', bb: 0x3b3631, tint: 0xe8c8a0, grade: 'saturate(.75) sepia(.14) contrast(1.15) brightness(.9)' },
-      academy: { hw: 7, h: 3.8, open: true, side: 1.15, sky: 'academy', skyFile: 'academy_sky.jpg', floor: tex('#8c8758', '#7c7748', 8, 'grass'), wall: 0xcbb98f, band: 0x2f5f8f, ceil: 0x9fc4e4,
+      academy: { shadow: true, hw: 7, h: 3.8, open: true, side: 1.15, sky: 'academy', skyFile: 'academy_sky.jpg', floor: tex('#8c8758', '#7c7748', 8, 'grass'), wall: 0xcbb98f, band: 0x2f5f8f, ceil: 0x9fc4e4,
         tx: { floor: ['academy_ground.jpg', 'hellenism_grass.jpg'], fr: 4, wall: ['academy_wall.jpg', 'greece_wall.jpg'], door: 'greece_door.jpg', hideBand: true }, part: 'none', bb: 0x8a7a55, tint: 0xf0ece4, grade: 'saturate(.92) sepia(.05) contrast(1.08) brightness(1.1)' },
-      lyceum:  { hw: 7, h: 3.2, sideE: 1.3, sky: 'lyceum', skyFile: 'lyceum_garden.jpg', floor: tex('#b8643c', '#a8582f', 8), wall: 0xe8dccb, band: 0x7a2e2e, ceil: 0x6a4a2e,
+      lyceum:  { shadow: true, hw: 7, h: 3.2, sideE: 1.3, sky: 'lyceum', skyFile: 'lyceum_garden.jpg', floor: tex('#b8643c', '#a8582f', 8), wall: 0xe8dccb, band: 0x7a2e2e, ceil: 0x6a4a2e,
         tx: { floor: ['lyceum_floor.jpg'], fr: 4, wall: ['lyceum_wall.jpg', 'greece_wall.jpg'], ceil: ['lyceum_ceiling.jpg', 'hellenism_ceiling.jpg'], cr: 3, door: 'greece_door.jpg', hideBand: true }, part: 'none', bb: 0x6a2e22, tint: 0xf3e4c6, grade: 'saturate(.95) sepia(.06) contrast(1.08) brightness(1.08)' },
       // 2장: 에피쿠로스의 정원(지붕 없는 밤 정원, 산울타리 담) · 스토아의 회랑(붉고 푸른 기둥이 두 줄로 늘어선 벽화 회랑)
-      garden:  { hw: 7, h: 3.8, open: true, side: 1.5, sky: 'academy', skyFile: 'garden_sky.jpg', floor: tex('#6f8e4c', '#5d7a3e', 8, 'grass'), wall: 0x3f6b34, band: 0xa8432f, ceil: 0xbcd6e8,
+      garden:  { shadow: true, hw: 7, h: 3.8, open: true, side: 1.5, sky: 'academy', skyFile: 'garden_sky.jpg', floor: tex('#6f8e4c', '#5d7a3e', 8, 'grass'), wall: 0x3f6b34, band: 0xa8432f, ceil: 0xbcd6e8,
         tx: { floor: 'hellenism_grass.jpg', fr: 4, wall: ['garden_hedge.jpg', 'mat_leaves.jpg', 'hellenism_grass.jpg'], door: 'greece_door.jpg', hideBand: true }, part: 'none', bb: 0x4a3a22, tint: 0xf3e4c6, grade: 'saturate(.95) sepia(.06) contrast(1.08) brightness(1.08)' },
-      stoa:    { hw: 3.4, h: 4.2, sideE: 1.2, sky: 'agora', skyFile: ['stoa_view.jpg', 'agora_sky.jpg'], floor: tex('#cfc3a6', '#bfb396', 6), wall: 0xe6d8bc, band: 0xa8432f, ceil: 0x6a4a2e,
+      stoa:    { shadow: true, hw: 3.4, h: 4.2, sideE: 1.2, sky: 'agora', skyFile: ['stoa_view.jpg', 'agora_sky.jpg'], floor: tex('#cfc3a6', '#bfb396', 6), wall: 0xe6d8bc, band: 0xa8432f, ceil: 0x6a4a2e,
         tx: { floor: 'hellenism_path.jpg', fr: 3, wall: 'hellenism_wall.jpg', ceil: 'hellenism_ceiling.jpg', cr: 3, door: 'greece_door.jpg', hideBand: true }, part: 'none', bb: 0x7a2e2e, tint: 0xf3e4c6, grade: 'saturate(1) sepia(.06) contrast(1.08) brightness(1.06)' },
       temple:  { floor: greekFloor, wall: 0xefe8d8, band: 0x2f5f8f, ceil: 0x9fc4e4, tx: GREEK_TX, ph: 2.6, part: 'none', bb: 0xcfc6b2, tint: 0xf0ece4, grade: 'saturate(1) contrast(1.08) brightness(1.1)' },
       hellenism: { floor: tex('#6f8e4c', '#5d7a3e', 8, 'grass'), wall: 0xe6d8bc, band: 0xa8432f, ceil: 0xbcd6e8, tx: { floor: 'hellenism_grass.jpg', fr: 4, wall: 'hellenism_wall.jpg', ceil: 'hellenism_ceiling.jpg', cr: 3, path: 'hellenism_path.jpg', door: 'greece_door.jpg', hideBand: true }, ph: 1.6, part: 'hedge', bb: 0x8a6a45, tint: 0xf3e4c6, grade: 'saturate(.95) sepia(.08) contrast(1.08) brightness(1.08)' },
       medieval: { floor: tex('#57514a', '#48433d', 6), wall: 0x6e655b, band: 0x7a2e2e, ceil: 0x2c2826, tx: { floor: 'medieval_floor.jpg', fr: 3, wall: 'medieval_wall.jpg', ceil: 'medieval_ceiling.jpg', cr: 2, door: 'medieval_door.jpg' }, ph: 2.6, part: 'stone', bb: 0x3b3631, tint: 0xe8b88a, grade: 'saturate(.9) sepia(.15) contrast(1.1) brightness(1.04)' },
       // 3장: 수도원 앞뜰(지붕 없는 밤, 높은 수도원 벽) · 지하 1층 서고(아치 천장) · 지하 2층 예배당. down이 있는 방은 그만큼 낮은 층에 짓고, 남쪽 입구에서 돌계단으로 내려온다
-      abbeygate: { hw: 7, h: 4.2, open: true, side: 3.4, sky: 'agora', floor: tex('#57514a', '#48433d', 6), wall: 0x8a7f72, band: 0x7a2e2e, ceil: 0x2c2826,
+      abbeygate: { shadow: true, hw: 7, h: 4.2, open: true, side: 3.4, sky: 'agora', floor: tex('#57514a', '#48433d', 6), wall: 0x8a7f72, band: 0x7a2e2e, ceil: 0x2c2826,
         skyFile: 'abbey_sky.jpg', tx: { floor: ['abbey_court.jpg', 'medieval_floor.jpg'], fr: 3, wall: ['abbey_wall.jpg', 'medieval_wall.jpg'], door: ['abbey_door.jpg', 'medieval_door.jpg'], hideBand: true }, part: 'none', bb: 0x3b3631, tint: 0xe8b88a, grade: 'saturate(.85) sepia(.12) contrast(1.1) brightness(1.0)' },
       crypt:   { h: 4.4, amb: 0.17, sun: 0.05, dark: true, floor: tex('#4a4540', '#3e3a35', 6), wall: 0x5e574e, band: 0x3a3632, ceil: 0x2a2622,
         tx: { floor: ['crypt_floor.jpg', 'medieval_floor.jpg'], fr: 3, wall: ['crypt_wall.jpg', 'medieval_wall.jpg'], ceil: ['crypt_vault.jpg', 'medieval_ceiling.jpg'], cr: 2, door: ['crypt_door.jpg', 'medieval_door.jpg'], hideBand: true }, part: 'none', bb: 0x2e2a26, tint: 0xe8b88a, grade: 'saturate(.8) sepia(.18) contrast(1.12) brightness(.95)' },
       crypt2:  { singleDoor: true, h: 4.4, amb: 0.17, sun: 0.05, dark: true, floor: tex('#4a4540', '#3e3a35', 6), wall: 0x5e574e, band: 0x3a3632, ceil: 0x2a2622,
         tx: { floor: ['crypt_floor.jpg', 'medieval_floor.jpg'], fr: 3, wall: ['crypt_wall.jpg', 'medieval_wall.jpg'], ceil: ['crypt_vault.jpg', 'medieval_ceiling.jpg'], cr: 2, door: ['crypt_door.jpg', 'medieval_door.jpg'], hideBand: true }, part: 'none', bb: 0x2e2a26, tint: 0xe8b88a, grade: 'saturate(.8) sepia(.18) contrast(1.12) brightness(.95)' },
       // 4장: 칸트의 산책길(지붕 없는 저녁 거리, 낮은 돌담, 동쪽은 강) · 벤담의 런던 거리(높은 벽돌 건물이 담, 누런 안개) · 밀의 강의실(높은 천장의 계단식 강의실)
-      kantwalk: { hw: 7, h: 3.8, open: true, side: 1.0, sky: 'konig', skyFile: 'kant_sky.jpg', amb: 0.26, fog: 0x10141e, floor: tex('#6f6a62', '#5e5952', 9, 'cobble'), wall: 0x8a8274, band: 0x2e4a3a, ceil: 0x9fc4e4,
+      kantwalk: { shadow: true, hw: 7, h: 3.8, open: true, side: 1.0, sky: 'konig', skyFile: 'kant_sky.jpg', amb: 0.26, fog: 0x10141e, floor: tex('#6f6a62', '#5e5952', 9, 'cobble'), wall: 0x8a8274, band: 0x2e4a3a, ceil: 0x9fc4e4,
         tx: { floor: 'kant_path.jpg', fr: 3, wall: ['kant_wall.jpg', 'medieval_wall.jpg'], door: ['kant_gate.jpg', 'medieval_door.jpg'], hideBand: true }, part: 'none', bb: 0x4a4440, tint: 0xf0e4cc, grade: 'saturate(.85) sepia(.12) contrast(1.08) brightness(1.06)' },
       london:  { hw: 7, h: 4.6, open: true, side: 4.6, sky: 'london', skyFile: 'london_sky.jpg', amb: 0.36, sun: 0.18, fog: 0x2e281c, fogN: 6, fogF: 21, floor: tex('#4a4744', '#3e3b38', 10, 'cobble'), wall: 0xffffff, wallTex: tex('#7a3e2a', '#8a4a32', 18, 'brick'), wr: 1, band: 0x2e2a26, ceil: 0x2c2826,
         tx: { floor: 'london_cobble.jpg', fr: 3, wall: 'london_brick.jpg', door: ['london_gate.jpg', 'medieval_door.jpg'], hideBand: true }, part: 'none', bb: 0x2e2a26, tint: 0xe8d0a8, grade: 'saturate(.8) sepia(.2) contrast(1.1) brightness(1.0)' },
@@ -1643,6 +1646,24 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       return kitCache[file];
     }
     G.prefetchKits = () => { if (!gltf) return; let i = 0; const next = () => { if (i >= KITS.length) return; kitFetch('models/obj_kit_' + KITS[i++] + '.glb').then(() => setTimeout(next, 30)); }; next(); };
+    // 그늘 구운 모델: 같은 재질을 꼭짓점 색 켠 짝으로 복제해 쓰고, 원래 재질의 그림·색이 바뀌면(그림이 늦게 오거나 금빛 덧칠) 매 화면 따라간다
+    // 짝 재질은 Phong(빛을 픽셀마다 계산): Lambert는 꼭짓점에서만 계산해 불이 가까우면 넓은 면에 부채꼴 얼룩이 생긴다
+    const VC = new Map(), PH = new Map();
+    const toPhong = (m, vc) => { if (!m.isMeshLambertMaterial) { const c = m.clone(); if (vc) c.vertexColors = true; return c; }
+      return new T.MeshPhongMaterial({ color: m.color, map: m.map, emissive: m.emissive, transparent: m.transparent, opacity: m.opacity, side: m.side, depthWrite: m.depthWrite, specular: 0x0c0c0c, shininess: 10, vertexColors: !!vc, polygonOffset: m.polygonOffset, polygonOffsetFactor: m.polygonOffsetFactor, polygonOffsetUnits: m.polygonOffsetUnits }); };
+    const PHS = new WeakSet(); // 짝 재질은 장을 바꿀 때 버리지 않는다(다시 쓴다)
+    const vcMat = m => { let v = VC.get(m); if (!v) { v = toPhong(m, true); VC.set(m, v); PHS.add(v); } return v; };
+    const phMat = m => { let v = PH.get(m); if (!v) { v = toPhong(m, false); PH.set(m, v); PHS.add(v); } return v; };
+    const syncOne = (v, o) => { if (v.map !== o.map) { v.map = o.map; v.needsUpdate = true; } v.color.copy(o.color); if (o.emissive && v.emissive) v.emissive.copy(o.emissive); v.opacity = o.opacity; };
+    const syncVC = () => { VC.forEach(syncOne); PH.forEach(syncOne); };
+    // 실제 그림자(시험: 광장만): 방 묶음 userData.shadow, 불 가까이 있어 그림자를 드리우면 안 되는 묶음은 userData.noCast
+    const upFlag = (o, k) => { for (let p = o; p; p = p.parent) if (p.userData && p.userData[k]) return true; return false; };
+    const shadowed = o => upFlag(o, 'shadow'), noCast = o => upFlag(o, 'noCast');
+    // 모든 방: 코드 도형의 Lambert 재질을 Phong 짝으로(픽셀 조명). 그림자 방(theme.shadow)만 그림자를 드리우고 받는다
+    const shadeAll = (root) => root.traverse(n => { if (!n.isMesh) return; const mt = n.material; if (!mt || Array.isArray(mt) || mt.isMeshBasicMaterial) return;
+      if (mt.isMeshLambertMaterial) n.material = phMat(mt);
+      if (mt.transparent || !shadowed(n)) return;
+      n.castShadow = !noCast(n) && !/^(Plane|Circle|Ring)/.test(n.geometry.type); n.receiveShadow = true; }); // 바닥·판 같은 얇은 면은 드리우지 않는다(그림자 얼룩 방지)
     function loadKit(kind, g, m, sx, sy) {
       if (!kitGlass) kitGlass = new T.MeshLambertMaterial({ color: 0xd8ecf8, emissive: 0x18242c, transparent: true, opacity: 0.28, depthWrite: false }); // 모래시계 유리
       if (!kitWhite) { kitWhite = L(0xe8e2d4); kitBlack = L(0x3a332c); skin(kitWhite, 'marble', 0xf2eee6); skin(kitBlack, 'marble', 0x4a4038); kitBeard = L(0xd8d4cc); skin(kitBeard, 'wool', 0xeeeae2); }
@@ -1661,6 +1682,9 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
           const nm = (n.material && n.material.name || '').replace(/\.\d+$/, '');
           if (/^c_[0-9a-f]{6}$/i.test(nm)) n.material = kitColor[nm] || (kitColor[nm] = L(parseInt(nm.slice(2), 16))); // 과일 등 그 색 그대로
           else n.material = MAP[nm] || stoneM;
+          if (n.geometry.attributes.color) n.material = vcMat(n.material); // 블렌더에서 구운 그늘(꼭짓점 색)을 곱하는 짝 재질
+          else if (n.material.isMeshLambertMaterial) n.material = phMat(n.material);
+          if (shadowed(g) && !n.material.transparent) { n.castShadow = !noCast(g); n.receiveShadow = true; }
         });
         kit.scale.setScalar(KIT_SCALE[kind] || 1); if (sx) kit.scale.x *= sx; if (sy) kit.scale.y *= sy;
         old.forEach(c => { if (!c.userData.keep) c.visible = false; }); g.add(kit);
@@ -2463,7 +2487,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       add(ag, C(0.9, 1.0, 0.25, 24), stoneM, 0, 0.12, 0); add(ag, C(0.55, 0.62, 0.75, 20), stoneM, 0, 0.62, 0);
       add(ag, C(0.62, 0.5, 0.12, 20), bronzeM, 0, 1.06, 0); add(ag, C(0.5, 0.5, 0.04, 20), E(0x7a2a10), 0, 1.12, 0).userData.keep = true; firewood(ag, 1.14, 0.4, 6, 31);
       loadKit('altar', ag);
-      flame(g, ri, x, 1.4, z, 1.3, true, 0xffa850, 1.2); blob(g, x, z, 2.2); col(x - 0.85, x + 0.85, z - 0.85, z + 0.85);
+      const f = flame(g, ri, x, 1.4, z, 1.3, true, 0xffa850, 1.2); blob(g, x, z, 2.2); col(x - 0.85, x + 0.85, z - 0.85, z + 0.85); return f;
     }
     function stall(g, ri, x, z, s, awningM) { // 시장 좌판: 탁자, 기둥 넷, 안쪽으로 기운 줄무늬 천막
       // 블렌더 모델 obj_kit_stall: 판자 계산대, 기둥과 들보, 처진 천막과 술, 상인의 저울, 바구니(모델의 +x가 벽 쪽이라 서쪽 좌판은 돌려 세운다)
@@ -2657,16 +2681,17 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       });
     }
     const sharedMats = [goldM, stoneM, woodM, woodD, ivoryM, darkM, bronzeM, ironM, terraM, leafM, oliveM, skinM, linenM, woolM, blueClothM, cypressM, caveRockM, stoaRedM, stoaBlueM, strawM, waterM, leatherM, burlapM, emberM, roofM, globeM, paperM, paperM2, boardM, noticeM];
-    const isShared = m => sharedMats.includes(m) || Object.values(faceM).includes(m);
+    const isShared = m => sharedMats.includes(m) || Object.values(faceM).includes(m) || PHS.has(m);
 
     function buildWorld() {
       if (world) { scene.remove(world); world.traverse(n => { if (n.material && !Array.isArray(n.material) && isShared(n.material)) n.material = null; }); disposeTree(world); }
       world = new T.Group(); scene.add(world);
+      shadowLights.forEach(s => { s.l.castShadow = false; }); shadowLights = [];
       roomLights = ROOMS.map(() => []); flames = []; motes = []; colliders = []; doors = []; objs = {}; accent = {}; floors = []; anims = []; secret = null; rings = []; ringFx = null; insFx = null; darkList = []; scaleWeights = null;
       buildInter();
 
     ROOMS.forEach((r, ri) => {
-      const k = r.theme, th = TH[k] || TH.agora, TX = th.tx, cz = -ri * RS, g = new T.Group(); world.add(g);
+      const k = r.theme, th = TH[k] || TH.agora, TX = th.tx, cz = -ri * RS, g = new T.Group(); world.add(g); g.userData.shadow = !!th.shadow; setTimeout(() => shadeAll(g), 0); // 방을 다 지은 뒤 한 번에 훑는다(모델은 loadKit이 따로)
       const yb = roomBase(ri); g.position.y = yb; // 지하 방은 방 전체를 그 층 높이로 내린다
       const hw = th.hw || HW, RH = th.h || H, last = ri === ROOMS.length - 1, W2 = hw * 2, D2 = HD * 2, seg = hw - 0.8, sx = 0.8 + seg / 2, ph = th.ph || 2.6;
       const prevHW = ri ? ((TH[ROOMS[ri - 1].theme] || TH.agora).hw || HW) : 0;
@@ -2865,7 +2890,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       const LAMPS = [[-2.6, 2.2], [2.6, 2.2], [-2.6, -3.8], [2.6, -3.8]];
       if (k === 'agora') {
         // 하늘이 트인 밤의 시장. 한가운데 제단을 세 연단이 반원으로 둘러싸고, 양옆에 줄무늬 천막 좌판
-        altar(g, ri, 0, cz - 0.6);
+        const altarF = altar(g, ri, 0, cz - 0.6);
         // 입구 옆 횃불 거치대: 살펴보면 등불을 옮겨 붙일 수 있다 (위에 금빛 표시)
         {
           const [tx, tz] = TORCH_AT, z = cz + tz, tg = new T.Group(); tg.position.set(tx, 0, z); g.add(tg); // 블렌더 모델 obj_kit_torchstand: 세 다리 돌 받침, 금빛 띠 청동 기둥, 잎 받침 그릇
@@ -2873,6 +2898,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
           add(tg, C(0.16, 0.08, 0.18, 12), bronzeM, 0, 1.42, 0); add(tg, C(0.13, 0.13, 0.03, 12), E(0x7a2a10), 0, 1.5, 0).userData.keep = true; firewood(tg, 1.52, 0.12, 4, 53);
           loadKit('torchstand', tg);
           const fire = flame(g, ri, tx, 1.68, z, 0.85, true, 0xffa850);
+          /* 불빛 그림자(점광원)는 한 화면에 6번씩 더 그려 2~3배 느려져 뺐다. 켜려면: [altarF, fire]의 light를 shadowLights에 넣는다 */ void altarF;
           const ring = add(g, new T.RingGeometry(0.45, 0.52, 36), new T.MeshBasicMaterial({ color: 0xf2c45a, transparent: true, opacity: 0.9, side: T.DoubleSide }), tx, 0.02, z);
           ring.rotation.x = -Math.PI / 2; ring.visible = false;
           const mk = add(g, new T.OctahedronGeometry(0.1), E(0xf2c45a), tx, 2.15, z);
@@ -3957,6 +3983,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         hemi.intensity = rth.amb == null ? 0.22 : rth.amb; dl.intensity = rth.sun == null ? 0.12 : rth.sun;
         scene.fog.color.setHex(rth.fog || 0x07090d); scene.fog.near = rth.fogN || 7; scene.fog.far = rth.fogF || 22; scene.background.setHex(rth.fog ? new T.Color(rth.fog).multiplyScalar(0.8).getHex() : 0x0b0f16); // 방마다 안개 빛(런던은 누런 안개)
         roomLights.forEach((ls, i) => ls.forEach(f => { f.on = i === ri; }));
+        { const rz = -ri * RS; dl.castShadow = !!rth.shadow; dl.position.set(-4, 10, rz + 6); dl.target.position.set(0, 0, rz); shadowLights.forEach(s => { s.l.castShadow = s.ri === ri; }); } // 그림자는 그 방에서만
         motes.forEach(m => { m.pts.visible = m.ri === ri; });
       }
       if (insFx) runIns(dt);
@@ -4019,7 +4046,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       });
       lantern.intensity = S.lantern === false || !lampAvail() ? 0 : 1.15 * (reduce ? 1 : 1 + Math.sin(t * 7) * 0.025);
       if (t - mapT > 0.08) { drawMap(ri); mapT = t; }
-      renderer.render(scene, camera);
+      syncVC(); renderer.render(scene, camera);
       requestAnimationFrame(loop);
     }
     requestAnimationFrame(loop);
