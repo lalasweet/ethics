@@ -1625,7 +1625,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     const KITS = ['scales', 'chariot', 'amphora', 'brazier', 'sign', 'produce', 'orator', 'tablets', 'sage', 'cave',
       'olive', 'vegbed', 'flowerbed', 'table', 'friends', 'tomb', 'notetable', 'oillamp', 'gbench', 'pergola', 'well', 'tools',
       'column', 'stoacol', 'altar', 'stall', 'torch', 'hanglamp', 'cypress', 'cot', 'cuptable', 'exedra', 'fountain', 'shrub',
-      'torchstand', 'shackles', 'timealtar', 'goods', 'capsa', 'beehive', 'colplaque', 'jesus', 'mary', 'buttonlock', 'hourglass', 'chandelier', 'pier', 'bookwall', 'sarcophagus', 'pew', 'votive', 'sarcbase', 'sarclid', 'monk', 'armchair', 'fireplace', 'globe', 'clock', 'merchant', 'counter', 'shopshelf', 'blackboard', 'autoicon', 'calculator', 'bigscale', 'deskrow', 'streetlamp', 'linden', 'gaschandelier', 'teacherdesk', 'writingdesk',
+      'torchstand', 'shackles', 'timealtar', 'goods', 'capsa', 'beehive', 'colplaque', 'jesus', 'mary', 'buttonlock', 'hourglass', 'chandelier', 'pier', 'bookwall', 'sarcophagus', 'pew', 'votive', 'sarcbase', 'sarclid', 'monk', 'armchair', 'fireplace', 'globe', 'clock', 'merchant', 'counter', 'shopshelf', 'blackboard', 'autoicon', 'calculator', 'bigscale', 'deskrow', 'streetlamp', 'linden', 'gaschandelier', 'teacherdesk', 'writingdesk', 'bookcase', 'barrel', 'crate', 'teatable', 'stanchions', 'lecturetable', 'pigdoor', 'sconce', 'wallboard', 'sashwindow', 'unigate', 'pilaster', 'urnplant', 'gildframe', 'oakdoor', 'chimney', 'prisonwin', 'guardtable', 'bucket', 'balustrade', 'celldoor',
       'stele', 'stelekey', 'rings', 'board', 'lawboard', 'shelves', 'diptych', 'reliquary', 'darkniche', 'mover', 'stairs', 'bookstand', 'notice', 'desk'], KIT_SCALE = { chariot: 1.5 };
     const kitColor = {};
     const kitCache = {};
@@ -2896,9 +2896,12 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         col(BX - 0.1, BX + 0.1, cz - 5.05, cz + 5.05);
         [5.0, 0.4, -5.0].forEach(z => { add(g, B(hw - BX, RH, 0.3), wallM(hw - BX, RH), (BX + hw) / 2, RH / 2, cz + z); col(BX, hw, cz + z - 0.15, cz + z + 0.15); });
         // 감방 안쪽 높은 창과 달빛
-        [2.7, -2.3].forEach(z => {
-          const w2 = add(g, new T.PlaneGeometry(0.7, 0.45), E(0x6f8fbf), hw - 0.02, RH - 0.55, cz + z); w2.rotation.y = -Math.PI / 2;
-          for (let i = -1; i <= 1; i++) add(g, B(0.04, 0.47, 0.04), ironM, hw - 0.04, RH - 0.55, cz + z + i * 0.18);
+        [2.7, -2.3].forEach(z => { // 블렌더 prisonwin: 깊은 돌 틀·쇠창살과 가로대
+          const wg = new T.Group(); wg.position.set(hw - 0.02, RH - 0.55, cz + z); wg.rotation.y = -Math.PI / 2; g.add(wg);
+          add(wg, new T.PlaneGeometry(0.7, 0.45), E(0x6f8fbf), 0, 0, 0).userData.keep = true;
+          for (let i = -1; i <= 1; i++) add(wg, B(0.04, 0.47, 0.04), ironM, i * 0.18, 0, 0.02);
+          loadKit('prisonwin', wg, { stone: wallM(1, 1) });
+          { const dg = new T.Group(); dg.position.set(BX, 0, cz + z); dg.rotation.y = -Math.PI / 2; g.add(dg); loadKit('celldoor', dg); } // 블렌더 celldoor: 감방 문틀·쇠띠·자물쇠 상자·자물통
           flame(g, ri, hw - 0.4, RH - 0.55, cz + z, 0.8, false, 0x8fb0e8);
         });
         // 횃불: 입구 쪽 하나는 꺼져 가고, 안쪽 하나는 꺼졌다. 소크라테스 감방 안 불만 희미하다 → 등불이 있어야 잘 보인다
@@ -2914,15 +2917,15 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         blob(g, 2.5, cz + 4.2, 0.7); col(2.2, 2.8, cz + 3.95, cz + 4.45);
         blob(g, 2.2, cz - 3.4, 1.6); col(1.4, 3.0, cz - 3.85, cz - 2.95);
         // 복도 꾸밈: 간수의 걸상과 작은 탁자(꺼진 등잔·열쇠 꾸러미·빵 조각), 물동이, 바닥에 흩어진 짚, 벽의 날짜 긋기 자국
-        { const gx = -2.7, gz = cz + 4.4;
-          add(g, B(0.5, 0.04, 0.36), woodM, gx, 0.6, gz); [[-0.2, -0.14], [0.2, -0.14], [-0.2, 0.14], [0.2, 0.14]].forEach(([dx, dz]) => add(g, B(0.04, 0.6, 0.04), woodD, gx + dx, 0.3, gz + dz));
-          add(g, C(0.16, 0.16, 0.04, 14), woodD, gx + 0.1, 0.42, gz + 0.5); [0, 2.1, 4.2].forEach(a => add(g, C(0.02, 0.02, 0.42, 6), woodD, gx + 0.1 + Math.cos(a) * 0.1, 0.21, gz + 0.5 + Math.sin(a) * 0.1));
-          add(g, C(0.06, 0.07, 0.04, 12), terraM, gx - 0.12, 0.64, gz); add(g, new T.SphereGeometry(0.035, 8, 6), L(0xb8783a), gx + 0.14, 0.64, gz - 0.06).scale.set(1.5, 0.7, 1);
-          const kr = add(g, new T.TorusGeometry(0.05, 0.008, 6, 14), ironM, gx + 0.05, 0.625, gz + 0.08); kr.rotation.x = Math.PI / 2;
-          [0, 1, 2].forEach(i => { const k2 = add(g, B(0.012, 0.008, 0.09), ironM, gx + 0.05 + Math.cos(i * 2) * 0.06, 0.625, gz + 0.08 + Math.sin(i * 2) * 0.06); k2.rotation.y = i * 2; });
+        { const gx = -2.7, gz = cz + 4.4, gt = new T.Group(); gt.position.set(gx, 0, gz); g.add(gt); // 블렌더 guardtable: 탁자·걸상·등잔·빵·잔·열쇠 꾸러미
+          add(gt, B(0.5, 0.04, 0.36), woodM, 0, 0.6, 0); [[-0.2, -0.14], [0.2, -0.14], [-0.2, 0.14], [0.2, 0.14]].forEach(([dx, dz]) => add(gt, B(0.04, 0.6, 0.04), woodD, dx, 0.3, dz));
+          add(gt, C(0.16, 0.16, 0.04, 14), woodD, 0.1, 0.42, 0.5); [0, 2.1, 4.2].forEach(a => add(gt, C(0.02, 0.02, 0.42, 6), woodD, 0.1 + Math.cos(a) * 0.1, 0.21, 0.5 + Math.sin(a) * 0.1));
+          add(gt, C(0.06, 0.07, 0.04, 12), terraM, -0.12, 0.64, 0); add(gt, new T.SphereGeometry(0.035, 8, 6), L(0xb8783a), 0.14, 0.64, -0.06).scale.set(1.5, 0.7, 1);
+          loadKit('guardtable', gt);
           blob(g, gx, gz, 1.0); col(gx - 0.3, gx + 0.3, gz - 0.2, gz + 0.7);
-          add(g, C(0.17, 0.14, 0.3, 14), woodD, -2.75, 0.15, cz - 1.9); add(g, new T.TorusGeometry(0.17, 0.01, 6, 18), ironM, -2.75, 0.24, cz - 1.9).rotation.x = Math.PI / 2;
-          add(g, C(0.15, 0.15, 0.01, 14), E(0x1a2a3a), -2.75, 0.29, cz - 1.9); blob(g, -2.75, cz - 1.9, 0.5); col(-2.95, -2.55, cz - 2.1, cz - 1.7);
+          const bk = new T.Group(); bk.position.set(-2.75, 0, cz - 1.9); bk.rotation.y = 0.7; g.add(bk); // 블렌더 bucket: 통널 동이·쇠테·밧줄 손잡이·국자
+          add(bk, C(0.17, 0.14, 0.3, 14), woodD, 0, 0.15, 0); add(bk, new T.TorusGeometry(0.17, 0.01, 6, 18), ironM, 0, 0.24, 0).rotation.x = Math.PI / 2;
+          add(bk, C(0.15, 0.15, 0.01, 14), E(0x1a2a3a), 0, 0.27, 0).userData.keep = true; loadKit('bucket', bk); blob(g, -2.75, cz - 1.9, 0.5); col(-2.95, -2.55, cz - 2.1, cz - 1.7);
           const strawFloor = new T.InstancedMesh(new T.BoxGeometry(0.006, 0.004, 0.16), strawM, 140), dm = new T.Object3D();
           for (let i = 0; i < 140; i++) { const cl = i % 3; dm.position.set(cl === 0 ? -2.6 + Math.random() * 0.7 : 0.2 + Math.random() * 0.6, 0.004, cz + (cl === 0 ? 3.6 : cl === 1 ? -4.6 : 1.6) + (Math.random() - 0.5) * 1.4); dm.rotation.set(0, Math.random() * 3.14, 0); dm.updateMatrix(); strawFloor.setMatrixAt(i, dm.matrix); }
           g.add(strawFloor);
@@ -2967,8 +2970,18 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         });
         const beam = (x0, x1, z0, z1) => add(g, B(Math.max(0.3, x1 - x0), 0.3, Math.max(0.3, z1 - z0)), woodD, (x0 + x1) / 2, RH - 0.15, cz + (z0 + z1) / 2);
         beam(GX, hw, GS - 0.15, GS + 0.15); beam(GX, hw, GN - 0.15, GN + 0.15); beam(GX - 0.15, GX + 0.15, GN, GS);
-        const rail = (x0, x1, z0, z1) => { add(g, B(x1 - x0, 0.55, z1 - z0), stoneM, (x0 + x1) / 2, 0.27, cz + (z0 + z1) / 2); col(x0, x1, cz + z0, cz + z1); };
+        const rail = (x0, x1, z0, z1) => col(x0, x1, cz + z0, cz + z1);
         rail(GX, hw, GS - 0.1, GS + 0.1); rail(GX, hw, GN - 0.1, GN + 0.1); rail(GX - 0.1, GX + 0.1, GN, GS);
+        const balu = (a, b, z, along) => { const len = b - a, bg2 = new T.Group(); g.add(bg2); // 기둥 사이 한 칸(블렌더 balustrade: 항아리 모양 난간 동자)
+          if (along) { bg2.position.set(z, 0, cz + (a + b) / 2); bg2.rotation.y = Math.PI / 2; } else bg2.position.set((a + b) / 2, 0, cz + z);
+          add(bg2, B(len, 0.55, 0.2), stoneM, 0, 0.27, 0); loadKit('balustrade', bg2, null, len / 1.75); };
+        [GS, GN].forEach(z => { for (let x = GX; x < hw - 0.05; x += 1.75) balu(x, Math.min(hw, x + 1.75 > hw - 0.4 ? hw : x + 1.75), z, false); });
+        for (let z = GN; z < GS - 0.05; z += 2) balu(z, Math.min(GS, z + 2), GX, true);
+        { const rf = new T.InstancedMesh(B(0.1, 0.14, 1), woodD, 64), dm = new T.Object3D(); let n = 0; // 지붕 아래 서까래
+          const put = (x, z, len, rot) => { if (n >= 64) return; dm.position.set(x, RH - 0.07, cz + z); dm.rotation.set(0, rot, 0); dm.scale.set(1, 1, len); dm.updateMatrix(); rf.setMatrixAt(n++, dm.matrix); };
+          for (let x = -hw + 0.4; x < hw - 0.2; x += 0.9) { put(x, (GS + HD) / 2, HD - GS, 0); put(x, (GN - HD) / 2, HD + GN, 0); }
+          for (let z = GN + 0.5; z < GS - 0.2; z += 0.9) put((GX - hw) / 2, z, GX + hw, Math.PI / 2);
+          rf.count = n; g.add(rf); }
         // 안뜰: 풀밭, 십자 자갈길, 가운데 분수, 사이프러스와 월계수
         const gM = L(0x5d7a3e); useTex(gM, ['academy_ground.jpg', 'hellenism_grass.jpg'], 3, 2.4);
         const gr2 = add(g, new T.PlaneGeometry(hw - GX, GS - GN), gM, (GX + hw) / 2, 0.008, cz + (GS + GN) / 2); gr2.rotation.x = -Math.PI / 2;
@@ -3301,16 +3314,18 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       const barrel = (x, z, s) => { const bg2 = new T.Group(); bg2.position.set(x, 0, z); bg2.scale.setScalar(s || 1); g.add(bg2);
         const pts = [[0, 0], [0.24, 0], [0.29, 0.3], [0.3, 0.42], [0.29, 0.54], [0.24, 0.84], [0, 0.84]].map(([a, b]) => new T.Vector2(a, b));
         add(bg2, new T.LatheGeometry(pts, 16), woodM, 0, 0, 0); [0.12, 0.72, 0.3, 0.54].forEach(y => add(bg2, new T.TorusGeometry(y > 0.2 && y < 0.6 ? 0.297 : 0.27, 0.012, 4, 20), ironM, 0, y, 0).rotation.x = Math.PI / 2);
+        bg2.rotation.y = x * 2.3 + z; loadKit('barrel', bg2); // 블렌더 barrel: 통널 홈·쇠테·판자 뚜껑·마개
         blob(g, x, z, 0.8 * (s || 1)); col(x - 0.3, x + 0.3, z - 0.3, z + 0.3); };
-      const crate = (x, z, y, s, rot) => { const cg = new T.Group(); cg.position.set(x, y || 0, z); cg.rotation.y = rot || 0; g.add(cg); const w = s || 0.6;
-        add(cg, B(w, w, w), woodM, 0, w / 2, 0); [-1, 1].forEach(a => { add(cg, B(w + 0.02, 0.06, 0.06), woodD, 0, w / 2 + a * (w / 2 - 0.03), w / 2); add(cg, B(w + 0.02, 0.06, 0.06), woodD, 0, w / 2 + a * (w / 2 - 0.03), -w / 2); });
-        add(cg, B(0.05, w * 1.3, 0.02), woodD, 0, w / 2, w / 2 + 0.005).rotation.z = 0.78;
+      const crate = (x, z, y, s, rot) => { const cg = new T.Group(); cg.position.set(x, y || 0, z); cg.rotation.y = rot || 0; g.add(cg); const w = s || 0.6, w0 = 0.6; cg.scale.setScalar(w / w0);
+        add(cg, B(w0, w0, w0), woodM, 0, w0 / 2, 0); [-1, 1].forEach(a => { add(cg, B(w0 + 0.02, 0.06, 0.06), woodD, 0, w0 / 2 + a * (w0 / 2 - 0.03), w0 / 2); add(cg, B(w0 + 0.02, 0.06, 0.06), woodD, 0, w0 / 2 + a * (w0 / 2 - 0.03), -w0 / 2); });
+        add(cg, B(0.05, w0 * 1.3, 0.02), woodD, 0, w0 / 2, w0 / 2 + 0.005).rotation.z = 0.78; loadKit('crate', cg); // 블렌더 crate: 널빤지·모서리 기둥·X자 버팀·쇠못
         if (!y) { blob(g, x, z, w * 1.6); col(x - w / 2 - 0.05, x + w / 2 + 0.05, z - w / 2 - 0.05, z + w / 2 + 0.05); } };
       const litM = new T.MeshBasicMaterial({ color: 0xe8b868 }), darkPaneM = L(0x1c2434), frameM = L(0x2a2420);
       const windowAt = (x, y, z, s, w, h, lit) => { // s: 벽에서 방 안쪽 방향(+1 동쪽). 창틀·가운데 창살·창턱
         const wg = new T.Group(); wg.position.set(x, y, z); wg.rotation.y = s > 0 ? Math.PI / 2 : -Math.PI / 2; g.add(wg);
         add(wg, B(w + 0.14, h + 0.14, 0.05), frameM, 0, 0, 0); add(wg, new T.PlaneGeometry(w, h), lit ? litM : darkPaneM, 0, 0, 0.03);
         add(wg, B(0.04, h, 0.03), frameM, 0, 0, 0.05); add(wg, B(w, 0.04, 0.03), frameM, 0, h * 0.18, 0.05); add(wg, B(w + 0.24, 0.06, 0.14), stoneM, 0, -h / 2 - 0.06, 0.06);
+        wg.children[1].userData.keep = true; loadKit('sashwindow', wg, null, w, h); // 블렌더 sashwindow: 몰딩 테·격자 창살·창턱·쐐기돌(유리 불빛은 그대로)
         return wg; };
       if (k === 'kantwalk') {
         // 쾨니히스베르크의 저녁 산책길: 보리수 가로수 두 줄, 쇠 가로등, 서쪽엔 칸트의 집 앞면, 동쪽 낮은 돌담 너머 프레겔 강과 쇠 난간
@@ -3359,8 +3374,8 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         { const hx = -hw + 0.05, plM = L(0xc8b898), hz = cz + 5.1; add(g, B(0.3, 3.4, 3.6), plM, hx - 0.15, 1.7, hz); add(g, B(0.9, 0.18, 4.0), L(0x5a3a2a), hx + 0.1, 3.45, hz).rotation.z = -0.35;
           [[1.5, -0.8, 1], [1.5, 0.8, 0], [2.6, 0, 1]].forEach(([y, dz, lit]) => windowAt(hx + 0.01, y, hz + dz, 1, 0.6, 0.85, lit)); }
         // 북쪽 대학 정문: 돌기둥, 들보, 박공, 새긴 이름
-        { const gz = nz + 0.3; [-1.25, 1.25].forEach(x => { add(g, B(0.5, 3.2, 0.5), stoneM, DX + x, 1.6, gz); add(g, B(0.62, 0.2, 0.62), stoneM, DX + x, 0.1, gz); add(g, B(0.62, 0.16, 0.62), stoneM, DX + x, 3.22, gz); col(DX + x - 0.3, DX + x + 0.3, gz - 0.3, gz + 0.3); });
-          add(g, B(3.2, 0.45, 0.5), stoneM, DX, 3.5, gz);
+        { const gz = nz + 0.3, ug = new T.Group(); ug.position.set(DX, 0, gz); g.add(ug); [-1.25, 1.25].forEach(x => { add(ug, B(0.5, 3.2, 0.5), stoneM, x, 1.6, 0); add(ug, B(0.62, 0.2, 0.62), stoneM, x, 0.1, 0); add(ug, B(0.62, 0.16, 0.62), stoneM, x, 3.22, 0); col(DX + x - 0.3, DX + x + 0.3, gz - 0.3, gz + 0.3); });
+          add(ug, B(3.2, 0.45, 0.5), stoneM, 0, 3.5, 0); loadKit('unigate', ug); // 블렌더 unigate: 띠 홈 돌기둥·코니스·박공 시계·돌 단지
           inscr(g, ['Albertina University'], 2.6, 0.34, DX, 3.5, gz + 0.26, { color: '#3a2a1a' }); }
         // 동쪽: 돌담 위 쇠 난간과 그 너머 강물
         for (let z = -HD + 0.5; z <= HD - 0.4; z += 1.0) add(g, C(0.02, 0.02, 0.55, 6), ironM, hw + 0.05, 1.27, cz + z);
@@ -3372,7 +3387,8 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         add(bg2, B(w, 2.3, 0.04), woodD, 0, 1.15, -0.18); [-1, 1].forEach(s => add(bg2, B(0.04, 2.3, 0.4), woodD, s * (w / 2 - 0.02), 1.15, 0)); add(bg2, B(w + 0.06, 0.06, 0.44), woodD, 0, 2.32, 0); // 뒤판·옆판·윗판
         for (let k2 = 0; k2 < 5; k2++) add(bg2, B(w - 0.06, 0.03, 0.38), woodM, 0, 0.12 + k2 * 0.5, 0.02);
         add(bg2, B(w + 0.1, 0.1, 0.48), woodD, 0, 2.38, 0.02); add(bg2, B(w, 0.12, 0.05), woodD, 0, 0.06, 0.2); // 위 몰딩, 아래 걸레받이
-        const bs = bookSet(); for (let k2 = 0; k2 < 4; k2++) fillShelf(bs, -w / 2 + 0.04, w / 2 - 0.04, 0.135 + k2 * 0.5, 0.2, Math.round(x * 13 + z * 7 + k2 * 31) & 1023, 0.42); bs.build(bg2);
+        const bs = bookSet(); for (let k2 = 0; k2 < 4; k2++) fillShelf(bs, -w / 2 + 0.04, w / 2 - 0.04, 0.135 + k2 * 0.5, 0.2, Math.round(x * 13 + z * 7 + k2 * 31) & 1023, 0.42);
+        const n0 = bg2.children.length; bs.build(bg2); bg2.children.slice(n0).forEach(c => { c.userData.keep = true; }); loadKit('bookcase', bg2, null, w / 1.6); // 블렌더 bookcase: 홈 판 기둥·코니스 이빨 장식(책은 그대로)
         const c = Math.abs(Math.sin(rot)) > 0.5; if (c) col(x - 0.25, x + 0.25, z - w / 2, z + w / 2); else col(x - w / 2, x + w / 2, z - 0.25, z + 0.25); };
       if (k === 'kantstudy') {
         // 칸트의 서재(아침): 동쪽 창과 햇살, 서쪽 책상과 의자, 동쪽 책장(숨은 시계바늘), 북동쪽 타일 난로, 안락의자, 깔개, 지구본
@@ -3395,6 +3411,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
           add(sg, C(0.045, 0.035, 0.05, 14), ivoryM, 0.1, 0.665, 0.05); add(sg, C(0.07, 0.07, 0.008, 16), ivoryM, 0.1, 0.644, 0.05); add(sg, new T.TorusGeometry(0.018, 0.005, 6, 10), ivoryM, 0.148, 0.668, 0.05).rotation.y = Math.PI / 2;
           const bk = add(sg, B(0.2, 0.04, 0.15), L(0x2e4a3a), -0.08, 0.66, -0.05); bk.rotation.y = 0.4;
           [-1, 1].forEach(s => add(sg, new T.TorusGeometry(0.022, 0.003, 6, 16), goldM, -0.05 + s * 0.026, 0.645, 0.1).rotation.x = Math.PI / 2);
+          sg.children.forEach((c, i) => { if (i >= 2) c.userData.keep = true; }); loadKit('teatable', sg); // 블렌더 teatable: 물결 테두리·굽은 다리 셋
           col(-0.15, 0.45, cz - 5.4, cz - 4.8); blob(g, 0.15, cz - 5.1, 0.7); }
         rug(g, ...P(0, -1.0), 2.2, 4.0, 0x6a2e2a, 0x9c7019);
         { const gg = new T.Group(); gg.position.set(2.6, 0, cz - 5.9); g.add(gg); add(gg, new T.SphereGeometry(0.25, 20, 14), globeM, 0, 0.85, 0); add(gg, C(0.04, 0.1, 0.6, 10), woodD, 0, 0.3, 0); loadKit('globe', gg, { globe: globeM }); col(2.3, 2.9, cz - 6.2, cz - 5.6); blob(g, 2.6, cz - 5.9, 0.9); }
@@ -3413,9 +3430,10 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       }
       if (k === 'ucl') {
         // 벤담의 대학 홀: 양쪽 벽 기둥 장식(필라스터)과 초상화, 천장 가운데 둥근 돔 그림과 몰딩, 가스 샹들리에 둘, 북쪽 열주·들보·박공(University College), 오토아이콘 앞 붉은 줄 차단봉, 벤치·흉상
-        const pil = (x, z, s) => { add(g, B(0.22, RH - 0.6, 0.5), stoneM, x, (RH - 0.6) / 2 + 0.3, z); add(g, B(0.3, 0.3, 0.62), stoneM, x, 0.15, z); add(g, B(0.3, 0.25, 0.64), stoneM, x, RH - 0.45, z); add(g, B(0.26, 0.08, 0.7), goldM, x, RH - 0.3, z); };
+        const pil = (x, z, s) => { const pg = new T.Group(); pg.position.set(x, 0, z); pg.rotation.y = s > 0 ? -Math.PI / 2 : Math.PI / 2; g.add(pg); // 블렌더 pilaster: 홈 기둥·잎 장식 주두
+          add(pg, B(0.5, RH - 0.6, 0.22), stoneM, 0, (RH - 0.6) / 2 + 0.3, 0); add(pg, B(0.62, 0.3, 0.3), stoneM, 0, 0.15, 0); add(pg, B(0.64, 0.25, 0.3), stoneM, 0, RH - 0.45, 0); add(pg, B(0.7, 0.08, 0.26), goldM, 0, RH - 0.3, 0); loadKit('pilaster', pg); };
         [-1, 1].forEach(s => { for (let z = -5.6; z <= 5.6; z += 2.8) pil(s * (hw - 0.11), cz + z, s); add(g, B(0.1, 0.3, D2), stoneM, s * (hw - 0.05), RH - 0.15, cz); add(g, B(0.08, 0.12, D2), stoneM, s * (hw - 0.04), 1.0, cz); });
-        [[-1, -4.2], [-1, 4.2], [1, 1.4], [1, -4.2]].forEach(([s, z]) => { const fg = new T.Group(); fg.position.set(s * (hw - 0.05), 3.0, cz + z); fg.rotation.y = s > 0 ? -Math.PI / 2 : Math.PI / 2; g.add(fg); add(fg, B(1.2, 1.5, 0.06), goldM, 0, 0, 0); const pm = L([0x3a2a1e, 0x2a2a22, 0x2a3a2a, 0x3a2a2a][(z > 0) + (s > 0) * 2]); useTex(pm, ((z > 0) + (s > 0)) % 2 ? 'portrait_scholar_b.jpg' : 'portrait_scholar_a.jpg', 1, 1); add(fg, new T.PlaneGeometry(1.04, 1.34), pm, 0, 0, 0.035); }); // 초상화 그림
+        [[-1, -4.2], [-1, 4.2], [1, 1.4], [1, -4.2]].forEach(([s, z]) => { const fg = new T.Group(); fg.position.set(s * (hw - 0.05), 3.0, cz + z); fg.rotation.y = s > 0 ? -Math.PI / 2 : Math.PI / 2; g.add(fg); add(fg, B(1.2, 1.5, 0.06), goldM, 0, 0, 0); const pm = L([0x3a2a1e, 0x2a2a22, 0x2a3a2a, 0x3a2a2a][(z > 0) + (s > 0) * 2]); useTex(pm, ((z > 0) + (s > 0)) % 2 ? 'portrait_scholar_b.jpg' : 'portrait_scholar_a.jpg', 1, 1); add(fg, new T.PlaneGeometry(1.04, 1.34), pm, 0, 0, 0.035).userData.keep = true; loadKit('gildframe', fg); }); // 초상화 그림 + 블렌더 gildframe(금 액자)
         { const dm = canvasTex(256, 256, c => { const gr = c.createRadialGradient(128, 128, 10, 128, 128, 128); gr.addColorStop(0, '#f8f0d8'); gr.addColorStop(0.25, '#d8c8a0'); gr.addColorStop(0.26, '#b89858'); gr.addColorStop(0.3, '#e8dcc0'); gr.addColorStop(1, '#c8b890'); c.fillStyle = gr; c.fillRect(0, 0, 256, 256);
             c.strokeStyle = 'rgba(120,90,50,.5)'; c.lineWidth = 3; for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; c.beginPath(); c.moveTo(128 + Math.cos(a) * 40, 128 + Math.sin(a) * 40); c.lineTo(128 + Math.cos(a) * 126, 128 + Math.sin(a) * 126); c.stroke(); } [70, 100].forEach(r2 => { c.beginPath(); c.arc(128, 128, r2, 0, 7); c.stroke(); }); });
           const domeM = new T.MeshLambertMaterial({ map: dm, emissive: 0x2a2418 }); useTex(domeM, 'ucl_dome.jpg', 1, 1, 0, () => domeM.emissive.set(0x3a3020)); const d = add(g, new T.CircleGeometry(3.2, 48), domeM, 0, RH - 0.02, cz); d.rotation.x = Math.PI / 2; const rg = add(g, new T.TorusGeometry(3.25, 0.1, 8, 64), stoneM, 0, RH - 0.06, cz); rg.rotation.x = Math.PI / 2; }
@@ -3425,8 +3443,8 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         { const gz = nz + 0.9; [-3.0, -1.4, 1.4, 3.0].forEach(x => { const cg = new T.Group(); cg.position.set(x, 0, gz); g.add(cg); add(cg, C(0.25, 0.28, 4.2, 16), stoneM, 0, 2.1, 0); loadKit('column', cg, null, null, 4.2 / 3.8); col(x - 0.3, x + 0.3, gz - 0.3, gz + 0.3); blob(g, x, gz, 0.9); });
           add(g, B(7.0, 0.5, 0.7), stoneM, 0, 4.45, gz); const sh = new T.Shape(); sh.moveTo(-3.6, 0); sh.lineTo(3.6, 0); sh.lineTo(0, 1.0); sh.lineTo(-3.6, 0); add(g, new T.ExtrudeGeometry(sh, { depth: 0.6, bevelEnabled: false }), stoneM, 0, 4.7, gz - 0.3);
           inscr(g, ['University College'], 3.0, 0.4, 0, 4.45, gz + 0.36, { color: '#3a2a1a' }); }
-        { const ax = -5.2 + 0.85, az = cz + 0.4; [[ax, az - 0.8], [ax, az + 0.8]].forEach(([x, z]) => { add(g, C(0.12, 0.14, 0.04, 14), bronzeM, x, 0.02, z); add(g, C(0.022, 0.022, 0.9, 8), bronzeM, x, 0.47, z); add(g, new T.SphereGeometry(0.035, 10, 8), goldM, x, 0.94, z); }); // 차단봉과 붉은 줄
-          const rope = add(g, C(0.02, 0.02, 1.6, 8), L(0x9a2a2a), ax, 0.85, az); rope.rotation.x = Math.PI / 2; col(ax - 0.1, ax + 0.1, az - 0.85, az + 0.85); }
+        { const ax = -5.2 + 0.85, az = cz + 0.4, sg = new T.Group(); sg.position.set(ax, 0, az); g.add(sg); [-0.8, 0.8].forEach(z => { add(sg, C(0.12, 0.14, 0.04, 14), bronzeM, 0, 0.02, z); add(sg, C(0.022, 0.022, 0.9, 8), bronzeM, 0, 0.47, z); add(sg, new T.SphereGeometry(0.035, 10, 8), goldM, 0, 0.94, z); }); // 차단봉과 붉은 줄
+          const rope = add(sg, C(0.02, 0.02, 1.6, 8), L(0x9a2a2a), 0, 0.85, 0); rope.rotation.x = Math.PI / 2; loadKit('stanchions', sg); col(ax - 0.1, ax + 0.1, az - 0.85, az + 0.85); } // 블렌더 stanchions: 놋쇠 받침·늘어진 벨벳 줄
         bench(g, ...P(5.6, 3.0), 1.8, -Math.PI / 2, woodM); bench(g, ...P(5.6, -1.0), 1.8, -Math.PI / 2, woodM);
         scanBust(g, -5.6, cz + 4.6, Math.PI / 2, 'aristotle'); scanBust(g, 5.6, cz - 5.4, -Math.PI / 2, 'socrates'); // 대리석 흉상(루브르 두상 스캔)
         furRug(g, ...P(0, 2.4), 3.6, 5.0, 0x6a2a24);
@@ -3440,24 +3458,25 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
           [-0.4, 0.4].forEach(x => { add(pd, B(0.6, 0.9, 0.02), goldM, x, 1.55, 0.085); add(pd, B(0.5, 0.8, 0.02), lac, x, 1.55, 0.095); add(pd, B(0.6, 0.6, 0.02), goldM, x, 0.55, 0.085); add(pd, B(0.5, 0.5, 0.02), lac, x, 0.55, 0.095); add(pd, new T.SphereGeometry(0.035, 10, 8), goldM, x * 0.25, 1.1, 0.11); });
           const pig = new T.Group(); pig.position.set(0, 2.55, 0.1); pd.add(pig); const pk = L(0xe8a0a0); add(pig, new T.SphereGeometry(0.16, 16, 12), pk, 0, 0, 0).scale.set(1.1, 1, 0.6); add(pig, C(0.06, 0.07, 0.06, 14), pk, 0, -0.03, 0.09).rotation.x = Math.PI / 2;
           [-1, 1].forEach(s => { add(pig, new T.SphereGeometry(0.012, 6, 6), darkM, s * 0.025, -0.03, 0.125); add(pig, new T.ConeGeometry(0.05, 0.1, 6), pk, s * 0.12, 0.13, 0).rotation.z = -s * 0.5; add(pig, new T.SphereGeometry(0.014, 6, 6), darkM, s * 0.06, 0.04, 0.09); });
-          [-1.15, 1.15].forEach(dx => { add(g, new T.LatheGeometry([[0.001, 0], [0.16, 0], [0.2, 0.2], [0.17, 0.42], [0.21, 0.5], [0.001, 0.5]].map(([a, b]) => new T.Vector2(a, b)), 20), goldM, px + dx, 0, pz + 0.3); add(g, new T.SphereGeometry(0.22, 10, 8), leafM, px + dx, 0.72, pz + 0.3); });
+          loadKit('pigdoor', pd); // 블렌더 pigdoor: 금박 기둥·꽃줄·붉은 칠 판·왕관 쓴 돼지 머리
+          [-1.15, 1.15].forEach(dx => { const ug = new T.Group(); ug.position.set(px + dx, 0, pz + 0.3); ug.rotation.y = dx; g.add(ug); add(ug, new T.LatheGeometry([[0.001, 0], [0.16, 0], [0.2, 0.2], [0.17, 0.42], [0.21, 0.5], [0.001, 0.5]].map(([a, b]) => new T.Vector2(a, b)), 20), goldM, 0, 0, 0); add(ug, new T.SphereGeometry(0.22, 10, 8), leafM, 0, 0.72, 0); loadKit('urnplant', ug); }); // 블렌더 urnplant: 손잡이 금 단지·둥근 나무
           inscr(g, ['A pig satisfied'], 1.4, 0.24, px, 3.1, pz + 0.12, { color: '#f2d27a', hi: false });
           col(px - 1.4, px + 1.4, wz, pz + 0.55); }
         { // 불만족한 소크라테스의 문: 낡은 참나무 한 짝, 쇠띠와 고리, 소박한 돌 문틀. 저울이 수평을 이루면 열린다
           const sx2 = r.door || 0, sz2 = wz + 0.04; [-0.86, 0.86].forEach(x => add(g, B(0.16, 2.5, 0.25), stoneM, sx2 + x, 1.25, sz2)); add(g, B(1.9, 0.22, 0.25), stoneM, sx2, 2.6, sz2);
-          const pv = new T.Group(); pv.position.set(sx2 - 0.78, 0, sz2 + 0.02); g.add(pv); add(pv, B(1.56, 2.38, 0.08), woodD, 0.78, 1.19, 0); [0.5, 1.2, 1.9].forEach(y => add(pv, B(1.5, 0.06, 0.02), ironM, 0.78, y, 0.05)); add(pv, new T.TorusGeometry(0.07, 0.012, 6, 14), ironM, 1.3, 1.1, 0.06);
+          const pv = new T.Group(); pv.position.set(sx2 - 0.78, 0, sz2 + 0.02); g.add(pv); add(pv, B(1.56, 2.38, 0.08), woodD, 0.78, 1.19, 0); [0.5, 1.2, 1.9].forEach(y => add(pv, B(1.5, 0.06, 0.02), ironM, 0.78, y, 0.05)); add(pv, new T.TorusGeometry(0.07, 0.012, 6, 14), ironM, 1.3, 1.1, 0.06); loadKit('oakdoor', pv); // 블렌더 oakdoor: 널판·화살촉 쇠 경첩·고리
           add(g, new T.PlaneGeometry(1.56, 2.38), E(0x0a0806), sx2, 1.19, sz2 - 0.02);
           anims.push({ o: pv, axis: 'y', on: () => !!S.opened[r.id], a0: 0, a1: -1.5 });
           inscr(g, ['Socrates dissatisfied'], 1.7, 0.24, sx2, 3.1, sz2 + 0.15, { color: '#e8dcc0', hi: false });
           scanBust(g, sx2 + 1.35, wz + 0.5, 0, 'socrates'); }
-        [[-hw + 0.25, 1, 2.0], [hw - 0.25, -1, 2.0]].forEach(([x, s, z]) => { const lg = new T.Group(); lg.position.set(x, 0, cz + z); lg.rotation.y = s > 0 ? 0 : Math.PI; g.add(lg); add(lg, B(0.06, 0.4, 0.2), bronzeM, 0, 2.2, 0); add(lg, C(0.08, 0.05, 0.12, 10), bronzeM, 0.15, 2.4, 0); flame(g, ri, x + s * 0.15, 2.55, cz + z, 0.5, true, 0xffc070, 0.9); }); // 벽 등잔
+        [[-hw + 0.25, 1, 2.0], [hw - 0.25, -1, 2.0]].forEach(([x, s, z]) => { const lg = new T.Group(); lg.position.set(x, 0, cz + z); lg.rotation.y = s > 0 ? 0 : Math.PI; g.add(lg); add(lg, B(0.06, 0.4, 0.2), bronzeM, 0, 2.2, 0); add(lg, C(0.08, 0.05, 0.12, 10), bronzeM, 0.15, 2.4, 0); loadKit('sconce', lg); flame(g, ri, x + s * 0.15, 2.55, cz + z, 0.5, true, 0xffc070, 0.9); }); // 벽 등잔
         furRug(g, ...P(0, 3.6), 2.6, 3.2, 0x5a2a24);
       }
       if (k === 'london') {
         // 산업 혁명기 런던의 밤거리: 양옆 벽돌 건물(창마다 불빛), 지붕 위 굴뚝, 가스등, 통·상자, 물웅덩이, 낮게 깔린 안개. 북쪽 끝은 돌로 지은 대학 정문
         [-1, 1].forEach(s => { const wx = s * (hw - 0.02);
           for (let z = -HD + 1.2; z <= HD - 1.0; z += 2.2) [1.7, 3.4].forEach((y, j) => { if (j === 0 && Math.abs(z - 1.4 * s) < 1.1) return; windowAt(wx, y, cz + z, -s, 0.8, 1.1, ((z * 7 + y * 3 + s * 5) % 3 + 3) % 3 < 1.2); });
-          for (let z = -HD + 1.0; z <= HD - 1.0; z += 3.6) { add(g, B(0.7, 1.1, 0.9), wallM(0.9, 1.1), wx + s * 0.4, 4.6 + 0.55, cz + z); [-0.2, 0.2].forEach(dz => add(g, C(0.08, 0.1, 0.35, 8), terraM, wx + s * 0.4, 5.35, cz + z + dz)); }
+          for (let z = -HD + 1.0; z <= HD - 1.0; z += 3.6) { const chg = new T.Group(), bm = wallM(0.9, 1.1); chg.position.set(wx + s * 0.4, 4.6, cz + z); g.add(chg); add(chg, B(0.7, 1.1, 0.9), bm, 0, 0.55, 0); [-0.2, 0.2].forEach(dz => add(chg, C(0.08, 0.1, 0.35, 8), terraM, 0, 0.75, dz)); loadKit('chimney', chg, { brick: bm }); } // 블렌더 chimney: 돌림띠·굴뚝 단지
           add(g, B(0.08, 0.14, D2), stoneM, wx - s * 0.02, 2.55, cz); add(g, B(0.12, 0.2, D2), stoneM, wx - s * 0.03, 4.5, cz); }); // 층 사이 돌띠, 처마
         [[-2.6, 3.2, 1], [2.6, -0.8, 1], [2.6, 5.4, 0], [-2.6, -4.4, 0]].forEach(([x, z, lit]) => streetLamp(...P(x, z), 0xffe0a0, lit));
         barrel(...P(5.9, 4.2)); barrel(...P(6.2, 3.5), 0.9); barrel(...P(-6.0, -1.4));
@@ -3467,10 +3486,10 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         { const fogM = new T.SpriteMaterial({ map: smokeTex, color: 0x9a8a68, transparent: true, opacity: 0.09, depthWrite: false }); // 땅에 낮게 깔린 안개
           for (let i = 0; i < 10; i++) { const f2 = new T.Sprite(fogM); f2.position.set((Math.random() * 2 - 1) * (hw - 1), 0.5 + Math.random() * 0.6, cz + (Math.random() * 2 - 1) * (HD - 1)); f2.scale.set(4.5, 2.2, 1); g.add(f2); } }
         // 대학 정문: 문 양옆 돌기둥, 위의 들보와 박공, 새긴 이름
-        { const gz = nz + 0.3; [-1.25, 1.25].forEach(x => { add(g, B(0.5, 3.4, 0.5), stoneM, DX + x, 1.7, gz); add(g, B(0.62, 0.2, 0.62), stoneM, DX + x, 0.1, gz); add(g, B(0.62, 0.16, 0.62), stoneM, DX + x, 3.42, gz); col(DX + x - 0.3, DX + x + 0.3, gz - 0.3, gz + 0.3); });
-          add(g, B(3.2, 0.5, 0.5), stoneM, DX, 3.75, gz);
+        { const gz = nz + 0.3, ug = new T.Group(); ug.position.set(DX, 0, gz); g.add(ug); [-1.25, 1.25].forEach(x => { add(ug, B(0.5, 3.4, 0.5), stoneM, x, 1.7, 0); add(ug, B(0.62, 0.2, 0.62), stoneM, x, 0.1, 0); add(ug, B(0.62, 0.16, 0.62), stoneM, x, 3.42, 0); col(DX + x - 0.3, DX + x + 0.3, gz - 0.3, gz + 0.3); });
+          add(ug, B(3.2, 0.5, 0.5), stoneM, 0, 3.75, 0);
           const sh = new T.Shape(); sh.moveTo(-1.75, 0); sh.lineTo(1.75, 0); sh.lineTo(0, 0.8); sh.lineTo(-1.75, 0);
-          const pd = add(g, new T.ExtrudeGeometry(sh, { depth: 0.5, bevelEnabled: false }), stoneM, DX, 4.0, gz - 0.25);
+          add(ug, new T.ExtrudeGeometry(sh, { depth: 0.5, bevelEnabled: false }), stoneM, 0, 4.0, -0.25); loadKit('unigate', ug, null, null, 3.75 / 3.5);
           inscr(g, ['University College'], 2.6, 0.36, DX, 3.75, gz + 0.26, { color: '#3a2a1a' }); }
       }
       if (k === 'lecture') {
@@ -3480,12 +3499,14 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         add(g, B(dx1 - dx0, 0.15, 0.35), woodD, (dx0 + dx1) / 2, 0.075, cz + dz1 + 0.17); // 한 칸 계단
         floors.push({ x0: dx0, x1: dx1, z0: cz + dz0, z1: cz + dz1, y: yb + 0.3 }, { x0: dx0, x1: dx1, z0: cz + dz1, z1: cz + dz1 + 0.35, y: yb + 0.15 });
         { const bx = -1.6, by = 2.3, bz = nz + 0.18; // 칠판과 분필 글씨(영어 필기체)
-          add(g, B(4.9, 1.95, 0.06), woodD, bx, by, bz); add(g, new T.PlaneGeometry(4.6, 1.7), L(0x1e3428), bx, by, bz + 0.035); add(g, B(4.6, 0.05, 0.12), woodD, bx, by - 0.9, bz + 0.07);
+          { const wb = new T.Group(); wb.position.set(bx, 0, bz); g.add(wb); add(wb, B(4.9, 1.95, 0.06), woodD, 0, by, 0); add(wb, B(4.6, 0.05, 0.12), woodD, 0, by - 0.9, 0.07); loadKit('wallboard', wb); } // 블렌더 wallboard: 몰딩 테·분필 받침·지도 두루마리
+          const bdM = L(0x1e3428); useTex(bdM, 'chalkboard.jpg', 2, 1); add(g, new T.PlaneGeometry(4.6, 1.7), bdM, bx, by, bz + 0.035);
           inscr(g, ['It is better to be Socrates dissatisfied', 'than a fool satisfied.', 'On Liberty, 1859'], 4.2, 1.3, bx, by + 0.05, bz + 0.045, { color: '#e6ede4', hi: false, size: 0.7 }); }
         { const tg = new T.Group(); tg.position.set(-4.2, 0.3, cz - 5.8); g.add(tg); // 교단 위 강의 탁자, 책과 물병
           add(tg, B(2.2, 0.07, 0.8), woodM, 0, 0.78, 0); [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => add(tg, B(0.07, 0.76, 0.07), woodD, a * 1.0, 0.38, b * 0.34)); add(tg, B(2.1, 0.5, 0.04), woodD, 0, 0.5, 0.36);
           [[-0.6, 0x7a2e2e], [-0.35, 0x2e4a3a], [0.5, 0x2f4a6f]].forEach(([x, c2]) => add(tg, B(0.28, 0.06, 0.2), L(c2), x, 0.85, -0.1));
-          add(tg, C(0.05, 0.07, 0.2, 10), new T.MeshBasicMaterial({ color: 0x9fb4c8, transparent: true, opacity: 0.45 }), 0.8, 0.92, 0); col(-5.35, -3.05, cz - 6.25, cz - 5.35); }
+          add(tg, C(0.05, 0.07, 0.2, 10), new T.MeshBasicMaterial({ color: 0x9fb4c8, transparent: true, opacity: 0.45 }), 0.8, 0.92, 0);
+          tg.children.forEach((c, i) => { if (i >= 6) c.userData.keep = true; }); loadKit('lecturetable', tg); col(-5.35, -3.05, cz - 6.25, cz - 5.35); }
         // 책상 위 물건(종류 0~5): 덮인 책 더미 · 펼친 노트 · 흩어진 종이 · 잉크병과 깃펜 · 종이 묶음과 연필 · 비움
         const deskBooks = bookSet();
         const deskThing = (x, y, z, kind, r0) => { const ry = Math.sin(r0) * 0.5;
@@ -3510,7 +3531,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         deskBooks.build(g);
         // 높은 창(서쪽은 달빛 줄기), 창 사이 초상화 틀
         [-1, 1].forEach(s => [3.2, -1.0].forEach(z => { const wx = s * (hw - 0.02); windowAt(wx, 2.9, cz + z, -s, 1.2, 2.6, 0); if (s < 0) lightShaft(g, -hw + 0.05, cz + z, 1, 0x9fb8e8); }));
-        [-1, 1].forEach(s => { const fg = new T.Group(); fg.position.set(s * (hw - 0.04), 2.9, cz + 1.1); fg.rotation.y = s > 0 ? -Math.PI / 2 : Math.PI / 2; g.add(fg); add(fg, B(0.9, 1.15, 0.05), goldM, 0, 0, 0); const pm2 = L(s < 0 ? 0x3a2a1e : 0x2a2a22); useTex(pm2, s < 0 ? 'portrait_scholar_a.jpg' : 'portrait_scholar_b.jpg', 1, 1); add(fg, new T.PlaneGeometry(0.76, 1.0), pm2, 0, 0, 0.03); });
+        [-1, 1].forEach(s => { const fg = new T.Group(); fg.position.set(s * (hw - 0.04), 2.9, cz + 1.1); fg.rotation.y = s > 0 ? -Math.PI / 2 : Math.PI / 2; g.add(fg); add(fg, B(0.9, 1.15, 0.05), goldM, 0, 0, 0); const pm2 = L(s < 0 ? 0x3a2a1e : 0x2a2a22); useTex(pm2, s < 0 ? 'portrait_scholar_a.jpg' : 'portrait_scholar_b.jpg', 1, 1); add(fg, new T.PlaneGeometry(0.76, 1.0), pm2, 0, 0, 0.035).userData.keep = true; loadKit('gildframe', fg, null, 0.75, 0.767); });
         // 가스 샹들리에 둘: 천장 막대, 고리, 유리 갓 등 여섯(가운데 하나만 실제 빛)
         [[0, 1.6], [0, -2.6]].forEach(([x, z]) => { const z2 = cz + z; add(g, C(0.02, 0.02, RH - 4.0, 6), bronzeM, x, (RH + 4.0) / 2, z2); { const cg2 = new T.Group(); cg2.position.set(x, 3.95, z2); g.add(cg2); add(cg2, new T.TorusGeometry(0.55, 0.025, 6, 28), bronzeM, 0, 0, 0).rotation.x = Math.PI / 2; loadKit('gaschandelier', cg2, null, 0.92); }
           for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2, lx = x + Math.cos(a) * 0.55, lz = z2 + Math.sin(a) * 0.55; add(g, new T.SphereGeometry(0.07, 10, 8), new T.MeshBasicMaterial({ color: 0xffe8b8, transparent: true, opacity: 0.55 }), lx, 4.07, lz); flame(g, ri, lx, 4.07, lz, 0.32, false, 0xffe0a0); }
