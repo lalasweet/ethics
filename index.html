@@ -707,7 +707,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
   function sfx(n) { if (S.sound === false) return; const a = audio(); if (a && SFX[n]) try { SFX[n](a); } catch (e) {} }
   // 장마다 배경 음악(audio/bgm_<장 id>.mp3, Suno). 없는 장은 코드로 만든 은은한 바람 소리. 끝과 시작은 1.5초씩 줄였다 키워 이음매를 숨긴다
   // 방에 bgm이 있으면(room.bgm, 예: 칸트 방들 'kant', 공리주의 방들 'utility') 그 음악(audio/bgm_<이름>.mp3)을 먼저 쓰고, 파일이 없으면 장 음악으로
-  const BGM = { greece: 'audio/bgm_greece.mp3', medieval: 'audio/bgm_medieval.mp3', modern: 'audio/bgm_modern.mp3', kant: 'audio/bgm_kant.mp3', utility: 'audio/bgm_utility.mp3' }; let bgmEl = null, bgmRoom = null; const bgmBad = {};
+  const BGM = { greece: 'audio/bgm_greece.mp3', hellenism: 'audio/bgm_hellenism.mp3', medieval: 'audio/bgm_medieval.mp3', modern: 'audio/bgm_modern.mp3', kant: 'audio/bgm_kant.mp3', utility: 'audio/bgm_utility.mp3' }; let bgmEl = null, bgmRoom = null; const bgmBad = {};
   function ambience(on) {
     const pick = k => k && BGM[k] && !bgmBad[BGM[k]] ? BGM[k] : null;
     const src = on && S.ch != null && (pick(bgmRoom) || pick(CHAPTERS[S.ch].id));
@@ -1645,6 +1645,21 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     const boardM = (() => { const c = document.createElement('canvas'); c.width = 256; c.height = 170; const x = c.getContext('2d'); x.fillStyle = '#1e3428'; x.fillRect(0, 0, 256, 170);
       for (let i = 0; i < 26; i++) { const px = Math.random() * 256, py = Math.random() * 170, r = 10 + Math.random() * 30, gr = x.createRadialGradient(px, py, 0, px, py, r); gr.addColorStop(0, 'rgba(220,230,220,.07)'); gr.addColorStop(1, 'rgba(220,230,220,0)'); x.fillStyle = gr; x.fillRect(0, 0, 256, 170); }
       const m = new T.MeshLambertMaterial({ map: new T.CanvasTexture(c) }); useTex(m, 'chalkboard.jpg', 1, 1); return m; })();
+    // 털 러그: 털결 그림을 입힌 바닥 + 털끝 점무늬(알파)를 입힌 얇은 겹 6장을 조금씩 띄워 쌓아(셸 텍스처링) 복슬복슬한 두께를 낸다. 가장자리는 둥근 타원
+    const FUR = {};
+    function furRug(g, x, z, w, d, col) {
+      if (!FUR.base) {
+        FUR.base = canvasTex(256, 256, c => { c.fillStyle = '#808080'; c.fillRect(0, 0, 256, 256); c.lineCap = 'round';
+          for (let i = 0; i < 2600; i++) { const px = Math.random() * 256, py = Math.random() * 256, a = Math.random() * 6.3, l = 3 + Math.random() * 6, v = 90 + Math.random() * 120 | 0; c.strokeStyle = 'rgb(' + v + ',' + v + ',' + v + ')'; c.lineWidth = 1 + Math.random(); c.beginPath(); c.moveTo(px, py); c.lineTo(px + Math.cos(a) * l, py + Math.sin(a) * l); c.stroke(); } });
+        FUR.tip = canvasTex(256, 256, c => { c.clearRect(0, 0, 256, 256); for (let i = 0; i < 5200; i++) { const v = 150 + Math.random() * 105 | 0; c.fillStyle = 'rgba(' + v + ',' + v + ',' + v + ',1)'; c.beginPath(); c.arc(Math.random() * 256, Math.random() * 256, 0.8 + Math.random() * 1.2, 0, 7); c.fill(); } });
+        [FUR.base, FUR.tip].forEach(t => t.repeat.set(3, 3));
+      }
+      const geo = new T.CircleGeometry(0.5, 48); geo.scale(w, d, 1);
+      const bm = new T.MeshLambertMaterial({ color: col, map: FUR.base }); const b = add(g, geo, bm, x, 0.008, z); b.rotation.x = -Math.PI / 2;
+      for (let i = 1; i <= 6; i++) { const k = i / 6, sm = new T.MeshLambertMaterial({ color: new T.Color(col).multiplyScalar(0.9 + k * 0.35), map: FUR.tip, alphaMap: FUR.tip, transparent: false, alphaTest: 0.35 + k * 0.4 });
+        const sg = new T.CircleGeometry(0.5 - k * 0.012, 48); sg.scale(w, d, 1); const s = add(g, sg, sm, x, 0.008 + i * 0.006, z); s.rotation.x = -Math.PI / 2; }
+      const rim = new T.RingGeometry(0.49, 0.515, 48); rim.scale(w, d, 1); const r = add(g, rim, new T.MeshLambertMaterial({ color: new T.Color(col).multiplyScalar(0.7), map: FUR.base }), x, 0.02, z); r.rotation.x = -Math.PI / 2; // 털이 눌린 가장자리
+    }
     // 돌려 깎은 다리 탁자(윗판 몰딩·앞판·다리 넷): 서류·노트 탁자
     function tableT(g, w, d, h) {
       add(g, B(w, 0.05, d), woodM, 0, h - 0.025, 0); add(g, B(w + 0.04, 0.02, d + 0.04), woodD, 0, h - 0.06, 0); add(g, B(w - 0.12, 0.1, d - 0.12), woodD, 0, h - 0.12, 0);
@@ -3271,7 +3286,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         const iz = cz - 2.3; add(g, B(W2 + 0.6, RH, 0.3), wallM(W2, RH), 0, RH / 2, iz - 0.15); col(-hw - 0.4, hw + 0.4, iz - 0.35, iz); ao(g, 0, iz + 0.02, W2, 0); add(g, B(W2, 0.14, 0.05), L(th.bb), 0, 0.07, iz + 0.02);
         bookcase(hw - 0.25, cz - 0.6, -Math.PI / 2, 2.4); bookcase(-hw + 0.25, cz + 5.7, Math.PI / 2, 1.8); bookcase(hw - 0.25, cz + 5.5, -Math.PI / 2, 1.6);
         windowAt(-hw + 0.02, 1.9, cz + 1.6, 1, 1.0, 1.5, 0); lightShaft(g, -hw + 0.05, cz + 1.6, 1, 0x9fb8e8);
-        rug(g, ...P(0, 2.2), 3.0, 4.4, 0x2e4a3a, 0x9c7019);
+        furRug(g, ...P(0, 2.2), 3.2, 4.4, 0x9a7a5a); // 복슬복슬한 털 러그
         [[-1.6, 3.4], [1.6, 0.4]].forEach(([x, z]) => hangLamp(g, ri, x, cz + z, RH));
         { const gg = new T.Group(); gg.position.set(3.5, 0, cz + 1.8); g.add(gg); add(gg, new T.SphereGeometry(0.25, 20, 14), globeM, 0, 0.85, 0); add(gg, C(0.04, 0.1, 0.6, 10), woodD, 0, 0.3, 0); loadKit('globe', gg, { globe: globeM }); col(3.2, 3.8, cz + 1.5, cz + 2.1); blob(g, 3.5, cz + 1.8, 0.9); }
         { const ch = new T.Group(); ch.position.set(-3.6, 0, cz + 2.6); ch.rotation.y = Math.PI / 2 + 0.3; g.add(ch); const lm = L(0x6a2e2a); // 손님 의자
