@@ -569,7 +569,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
   const SYM4 = ['▤', '○', '⚖︎', '☾', '☺︎', '□']; // 리케이움: 책·저울·얼굴
   // 방 꾸밈 → 문제 창 테마(.modal[data-room]): 0 그리스, 1 헬레니즘, 2 중세, 3 근대
   const TH_HW = { prison: 3.2, stoa: 3.4 }; // 방 폭이 기본(7)과 다른 theme(옆문 자리 계산용, init3D의 TH와 같게)
-  const ERA = { agora: 0, prison: 0, academy: 0, lyceum: 0, temple: 0, hellenism: 1, garden: 1, stoa: 1, medieval: 2, abbeygate: 2, crypt: 2, crypt2: 2, modern: 3, kantwalk: 3, london: 3, lecture: 3, kantstudy: 3, kantoffice: 3, ucl: 3, vestibule: 3 };
+  const ERA = { agora: 0, prison: 0, academy: 0, lyceum: 0, temple: 0, garden: 1, stoa: 1, medieval: 2, abbeygate: 2, crypt: 2, crypt2: 2, kantwalk: 3, lecture: 3, kantstudy: 3, kantoffice: 3, ucl: 3, vestibule: 3 };
 
   // 공개용 빌드(tools/build-index.ps1)가 true로 바꾼다: 교사용 정답을 화면에서 빼고, 아래 퍼즐 데이터를 암호화해 소스 보기로 정답을 읽을 수 없게 한다
   const PUBLIC = true;
@@ -600,17 +600,8 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
   // 방 하나의 크기: 가로 2·HW, 세로 2·HD (m). 방 중심은 z = -방번호·RS
   const HW = 7, HD = 7, RS = 14;
   // 사물 자리: 앞쪽 양 벽, 칸막이 뒤 양 벽, 뒤쪽 가운데. face는 이미지가 바라보는 방향
-  // 벽 감실 그림: 사물과 벽을 한 장에 그린 이미지(images/niche_이름.jpg)를 벽에 끼워 넣는다.
-  // 모든 사물이 감실 자리에 서고, 감실 그림이 아직 없으면 그 자리에 사물 그림 판을 세운다.
-  // h·y는 그림 높이와 바닥에서 띄운 높이(m). 사물마다 다르게 하려면 NICHE_SIZE에 적는다.
-  // 문제 창 삽화 파일을 퍼즐 id와 다른 이름으로 쓸 때
-  const NICHE_SIZE = {
-    'compare-ps': { file: 'niche_socrates.jpg' }, // 비석 그림이라 감옥 벽의 두 낙서에 쓴다
-    'epi-desire': { file: 'niche_epicurus_desire.jpg' }, 'epi-death': { file: 'niche_epicurus_death.jpg' }, 'stoa-logos': { file: 'niche_stoa.jpg' }
-  };
   ALLP.forEach(p => {
     const side = p.x < -0.5 ? -1 : p.x > 0.5 ? 1 : 0, front = p.z > 0;
-    p.niche = Object.assign({ file: 'niche_' + p.id.replace(/-/g, '_') + '.jpg', h: 2.1, y: 0.3 }, NICHE_SIZE[p.id] || {});
     // at: 방 안의 정확한 자리 [x, z], look: 사물 앞면이 바라볼 곳 (없으면 방 한가운데)
     if (p.at) { const lk = p.look || [0, 0]; p.x = p.at[0]; p.z = p.at[1]; p.face = Math.atan2(lk[0] - p.x, lk[1] - p.z); p.wall = 'free'; }
     else if (side === 0) { p.face = 0; p.x = -3.9; p.z = -6.25; p.wall = 'north'; } // 가운데 사물은 북쪽 벽, 문 왼쪽 감실로
@@ -1543,7 +1534,6 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       stoa:    { shadow: true, hw: 3.4, h: 4.2, sideE: 1.2, sky: 'agora', skyFile: ['stoa_view.jpg', 'agora_sky.jpg'], floor: tex('#cfc3a6', '#bfb396', 6), wall: 0xe6d8bc, band: 0xa8432f, ceil: 0x6a4a2e,
         tx: { floor: 'hellenism_path.jpg', fr: 3, wall: 'hellenism_wall.jpg', ceil: 'hellenism_ceiling.jpg', cr: 3, door: 'greece_door.jpg', hideBand: true }, part: 'none', bb: 0x7a2e2e, tint: 0xf3e4c6, grade: 'saturate(1) sepia(.06) contrast(1.08) brightness(1.06)' },
       temple:  { floor: greekFloor, wall: 0xefe8d8, band: 0x2f5f8f, ceil: 0x9fc4e4, tx: GREEK_TX, ph: 2.6, part: 'none', bb: 0xcfc6b2, tint: 0xf0ece4, grade: 'saturate(1) contrast(1.08) brightness(1.1)' },
-      hellenism: { floor: tex('#6f8e4c', '#5d7a3e', 8, 'grass'), wall: 0xe6d8bc, band: 0xa8432f, ceil: 0xbcd6e8, tx: { floor: 'hellenism_grass.jpg', fr: 4, wall: 'hellenism_wall.jpg', ceil: 'hellenism_ceiling.jpg', cr: 3, path: 'hellenism_path.jpg', door: 'greece_door.jpg', hideBand: true }, ph: 1.6, part: 'hedge', bb: 0x8a6a45, tint: 0xf3e4c6, grade: 'saturate(.95) sepia(.08) contrast(1.08) brightness(1.08)' },
       medieval: { floor: tex('#57514a', '#48433d', 6), wall: 0x6e655b, band: 0x7a2e2e, ceil: 0x2c2826, tx: { floor: 'medieval_floor.jpg', fr: 3, wall: 'medieval_wall.jpg', ceil: 'medieval_ceiling.jpg', cr: 2, door: 'medieval_door.jpg' }, ph: 2.6, part: 'stone', bb: 0x3b3631, tint: 0xe8b88a, grade: 'saturate(.9) sepia(.15) contrast(1.1) brightness(1.04)' },
       // 3장: 수도원 앞뜰(지붕 없는 밤, 높은 수도원 벽) · 지하 1층 서고(아치 천장) · 지하 2층 예배당. down이 있는 방은 그만큼 낮은 층에 짓고, 남쪽 입구에서 돌계단으로 내려온다
       abbeygate: { shadow: true, hw: 7, h: 4.2, open: true, side: 3.4, sky: 'agora', floor: tex('#57514a', '#48433d', 6), wall: 0x8a7f72, band: 0x7a2e2e, ceil: 0x2c2826,
@@ -1552,11 +1542,9 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         tx: { floor: ['crypt_floor.jpg', 'medieval_floor.jpg'], fr: 3, wall: ['crypt_wall.jpg', 'medieval_wall.jpg'], ceil: ['crypt_vault.jpg', 'medieval_ceiling.jpg'], cr: 2, door: ['crypt_door.jpg', 'medieval_door.jpg'], hideBand: true }, part: 'none', bb: 0x2e2a26, tint: 0xe8b88a, grade: 'saturate(.8) sepia(.18) contrast(1.12) brightness(.95)' },
       crypt2:  { singleDoor: true, h: 4.4, amb: 0.17, sun: 0.05, dark: true, floor: tex('#4a4540', '#3e3a35', 6), wall: 0x5e574e, band: 0x3a3632, ceil: 0x2a2622,
         tx: { floor: ['crypt_floor.jpg', 'medieval_floor.jpg'], fr: 3, wall: ['crypt_wall.jpg', 'medieval_wall.jpg'], ceil: ['crypt_vault.jpg', 'medieval_ceiling.jpg'], cr: 2, door: ['crypt_door.jpg', 'medieval_door.jpg'], hideBand: true }, part: 'none', bb: 0x2e2a26, tint: 0xe8b88a, grade: 'saturate(.8) sepia(.18) contrast(1.12) brightness(.95)' },
-      // 4장: 칸트의 산책길(지붕 없는 저녁 거리, 낮은 돌담, 동쪽은 강) · 벤담의 런던 거리(높은 벽돌 건물이 담, 누런 안개) · 밀의 강의실(높은 천장의 계단식 강의실)
+      // 4장: 쾨니히스베르크의 거리(지붕 없는 저녁 거리, 낮은 돌담, 동쪽은 강)
       kantwalk: { shadow: true, hw: 7, h: 3.8, open: true, side: 1.0, sky: 'konig', skyFile: 'kant_sky.jpg', amb: 0.26, fog: 0x10141e, floor: tex('#6f6a62', '#5e5952', 9, 'cobble'), wall: 0x8a8274, band: 0x2e4a3a, ceil: 0x9fc4e4,
         tx: { floor: 'kant_path.jpg', fr: 3, wall: ['kant_wall.jpg', 'medieval_wall.jpg'], door: ['kant_gate.jpg', 'medieval_door.jpg'], hideBand: true }, part: 'none', bb: 0x4a4440, tint: 0xf0e4cc, grade: 'saturate(.85) sepia(.12) contrast(1.08) brightness(1.06)' },
-      london:  { hw: 7, h: 4.6, open: true, side: 4.6, sky: 'london', skyFile: 'london_sky.jpg', amb: 0.36, sun: 0.18, fog: 0x2e281c, fogN: 6, fogF: 21, floor: tex('#4a4744', '#3e3b38', 10, 'cobble'), wall: 0xffffff, wallTex: tex('#7a3e2a', '#8a4a32', 18, 'brick'), wr: 1, band: 0x2e2a26, ceil: 0x2c2826,
-        tx: { floor: 'london_cobble.jpg', fr: 3, wall: 'london_brick.jpg', door: ['london_gate.jpg', 'medieval_door.jpg'], hideBand: true }, part: 'none', bb: 0x2e2a26, tint: 0xe8d0a8, grade: 'saturate(.8) sepia(.2) contrast(1.1) brightness(1.0)' },
       // 벤담의 대학(UCL 같은 신고전주의 홀): 높은 천장, 흰 돌벽과 기둥 장식, 대리석 바둑판 바닥, 북쪽 열주와 박공
       ucl: { hw: 7, h: 6.0, amb: 0.32, sun: 0.12, floor: tex('#e8e2d6', '#4a4640', 8), wall: 0xe6dccb, band: 0x8a7a5a, ceil: 0xe8e0d0,
         tx: { floor: ['ucl_floor.jpg'], fr: 2, wall: ['ucl_wall.jpg'], ceil: ['ucl_ceiling.jpg'], cr: 2, door: ['ucl_door.jpg', 'lecture_door.jpg', 'medieval_door.jpg'], hideBand: true }, part: 'none', bb: 0x8a7a6a, tint: 0xf0e4cc, grade: 'saturate(.9) sepia(.08) contrast(1.06) brightness(1.08)' },
@@ -1570,7 +1558,6 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         tx: { floor: ['lecture_floor.jpg', 'modern_floor.jpg'], fr: 3, wall: ['kant_office_wall.jpg', 'modern_wall.jpg'], ceil: ['modern_ceiling.jpg'], cr: 2, shelf: 'modern_bookshelf.jpg', door: ['lecture_door.jpg', 'medieval_door.jpg'], hideBand: true }, part: 'none', bb: 0x3a2618, tint: 0xefd8b0, grade: 'saturate(.9) sepia(.1) contrast(1.08) brightness(1.06)' },
       lecture: { hw: 7, h: 5.0, amb: 0.24, floor: tex('#8a6440', '#7a5636', 10, 'plank'), wall: 0xd8ccb2, band: 0x2e4a3a, ceil: 0xeee6d4,
         tx: { floor: ['lecture_floor.jpg', 'modern_floor.jpg'], fr: 4, wall: ['lecture_wall.jpg', 'modern_wall.jpg'], ceil: ['lecture_ceiling.jpg', 'modern_ceiling.jpg'], cr: 3, shelf: 'modern_bookshelf.jpg', door: ['lecture_door.jpg', 'medieval_door.jpg'], hideBand: true }, part: 'none', bb: 0x3a2618, tint: 0xefd8b0, grade: 'saturate(.9) sepia(.1) contrast(1.08) brightness(1.06)' },
-      modern:  { floor: tex('#8a6440', '#7a5636', 10, 'plank'), wall: 0xd8ccb2, band: 0x2e4a3a, ceil: 0xeee6d4, tx: { floor: 'modern_floor.jpg', fr: 4, wall: 'modern_wall.jpg', ceil: 'modern_ceiling.jpg', cr: 3, shelf: 'modern_bookshelf.jpg', hideBand: true }, ph: 2.4, part: 'shelf', bb: 0x3a2618, tint: 0xefd8b0, grade: 'saturate(.9) sepia(.1) contrast(1.08) brightness(1.06)' }
     };
     const loader = new T.TextureLoader();
     const aniso = Math.min(8, renderer.capabilities.getMaxAnisotropy ? renderer.capabilities.getMaxAnisotropy() : 1);
@@ -1613,16 +1600,10 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       const grp = new T.Group(); grp.position.set(x, 0.011, z); grp.rotation.y = ang; g.add(grp);
       const m = new T.Mesh(new T.PlaneGeometry(len, 0.75), aoM); m.rotation.x = -Math.PI / 2; m.position.z = 0.375; grp.add(m);
     }
-    // 사물을 그림(감실·그림 판)으로 보여 줄지. false면 모두 3D 도형으로 보여 준다 (특별 수업처럼 공간 안은 도형으로 통일)
-    const USE_ART = false;
     // 사물 모형의 핵심 부분 색 (풀면 금빛으로 바뀐다)
     const BASE_COL = { podium: 0xd9d2c2, stele: 0xcfc8b8, chariot: 0x9a6a36, scales: 0xa0743c, table: 0x7a5636, tomb: 0xbdb7aa, chain: 0x5a4a3e, column: 0xa8432f, frame: 0xb8913a, stairs: 0x9a948a, notice: 0x6a4a2e, clock: 0x5a3a22, ledger: 0x6a4a2e, board: 0x5a3e26, desk: 0x6a4a2e,
       tablets: 0xb89a5a, lawboard: 0x7a2e2e, sage: 0xe2dccb, rings: 0x5a4a3e, cave: 0xd8a640, shelves: 0x2e4a3a, busts: 0xcfc8b8,
       orator: 0xd9d2c2, geoboard: 0x5a3e26, stoic: 0x9a8a70, friends: 0x8a3a5a, armillary: 0xb8913a };
-    // 3D 모델이 준비된 사물 id 목록 (models 폴더에 obj_이름.glb). 없는 파일을 찾느라 생기는 오류를 막으려고 목록으로 관리한다
-    const MODELS = [];
-    const MODEL_SCALE = {}; // 사물별 높이 보정 (1 = 그림 판과 같은 높이)
-    const MODEL_TURN = {};  // 모델이 엉뚱한 쪽을 볼 때 돌리는 각도(라디안)
     const gltf = T.GLTFLoader ? new T.GLTFLoader() : null;
     // 스캔한 조각 모델(glb): 한 번만 받아 두고 같은 모양을 여러 번 쓴다. 못 받으면 null(코드로 빚은 모양을 그대로 둔다)
     const scanCache = {};
@@ -1705,8 +1686,6 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         old.forEach(c => { if (!c.userData.keep) c.visible = false; }); g.add(kit);
       });
     }
-    const SPRITE_H = { podium: 1.35, stele: 1.6, chariot: 1.15, scales: 1.8, table: 1.15, tomb: 1.15, chain: 1.6, column: 2.1, frame: 1.6, stairs: 1.15, notice: 1.9, clock: 2.0, ledger: 1.25, board: 1.75, desk: 1.35,
-      tablets: 1.2, lawboard: 1.9, sage: 1.35, rings: 1.7, cave: 1.4, shelves: 1.5, busts: 1.55, orator: 1.85, geoboard: 1.75, stoic: 1.4, friends: 0.9, armillary: 1.75 };
     const H = 3.8;
     const vg = document.createElement('div'); vg.className = 'vignette'; vg.setAttribute('aria-hidden', 'true');
     host.insertBefore(vg, renderer.domElement.nextSibling);
@@ -2375,11 +2354,6 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       [-0.26, 0, 0.26].forEach((dx, i) => { add(g, C(0.03, 0.03, 0.16, 8), ivoryM, x + dx, 1.55 + (i === 1 ? 0.06 : 0), z); flame(g, ri, x + dx, 1.69 + (i === 1 ? 0.06 : 0), z, 0.32, i === 1, 0xffb648); });
       blob(g, x, z, 0.6); col(x - 0.22, x + 0.22, z - 0.22, z + 0.22);
     }
-    function floorLamp(g, ri, x, z) { // 근대: 갓 씌운 스탠드
-      add(g, C(0.17, 0.2, 0.05, 14), bronzeM, x, 0.03, z); add(g, C(0.025, 0.025, 1.45, 8), bronzeM, x, 0.75, z);
-      add(g, new T.CylinderGeometry(0.16, 0.26, 0.28, 16, 1, true), new T.MeshLambertMaterial({ color: 0xe8cf98, emissive: 0x6a4a18, side: T.DoubleSide }), x, 1.55, z);
-      flame(g, ri, x, 1.5, z, 0.75, true, 0xffd59a, null, { plain: true }); blob(g, x, z, 0.6); col(x - 0.22, x + 0.22, z - 0.22, z + 0.22);
-    }
     function amphora(g, x, z, s) { // 그리스 항아리 (블렌더 모델 obj_kit_amphora가 오면 바꿔 세운다)
       const ag = new T.Group(); ag.position.set(x, 0, z); ag.scale.setScalar(s); ag.rotation.y = (x * 7.3 + z * 3.1) % (Math.PI * 2); g.add(ag);
       const pts = [[0, 0], [0.1, 0], [0.15, 0.08], [0.24, 0.32], [0.23, 0.52], [0.12, 0.7], [0.08, 0.84], [0.12, 0.9], [0.1, 0.92]].map(([a, b]) => new T.Vector2(a, b));
@@ -2395,10 +2369,6 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       loadKit('gbench', grp, null, len / 1.6); // 블렌더 모델: 소용돌이 다리 돌 벤치
       blob(g, x, z, len * 0.7);
       if (Math.abs(Math.sin(rot)) > 0.5) col(x - 0.25, x + 0.25, z - len / 2, z + len / 2); else col(x - len / 2, x + len / 2, z - 0.25, z + 0.25);
-    }
-    function planter(g, x, z) { // 화분
-      add(g, C(0.3, 0.22, 0.45, 14), terraM, x, 0.23, z); add(g, new T.SphereGeometry(0.42, 12, 10), leafM, x, 0.7, z).scale.set(1, 0.8, 1);
-      blob(g, x, z, 0.9); col(x - 0.32, x + 0.32, z - 0.32, z + 0.32);
     }
     function olive(g, x, z) { // 올리브 나무 (블렌더 모델 obj_kit_olive: 비틀린 줄기·잎 덩이·열매)
       const og = new T.Group(); og.position.set(x, 0, z); og.rotation.y = (x * 3.7 + z * 1.3) % (Math.PI * 2); g.add(og);
@@ -3609,56 +3579,6 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         if (o.userData.drawer) { const dz = o.userData.drawer.position.z; anims.push({ o: o.userData.drawer, pos: 'z', on: () => done(p.id), a0: dz, a1: dz + 0.3 }); } // 풀면 교탁 서랍이 열린다
         if (o.userData.darkReveal) darkList.push({ m: o.userData.darkReveal, id: p.id });
         if (o.userData.hatch) anims.push({ o: o.userData.hatch, axis: 'y', on: () => done(p.id), a0: 0, a1: -1.9 }); // 풀면 비석 받침의 작은 문이 열린다
-        // 3D 모델(models/obj_이름.glb)이 있는 사물은 그림 판 대신 진짜 입체 모델을 세운다
-        if (gltf && MODELS.includes(p.id)) {
-          gltf.load('models/obj_' + p.id.replace(/-/g, '_') + '.glb', res => {
-            const mdl = res.scene, mats = [];
-            mdl.traverse(n => { if (n.isMesh) { n.material = n.material.clone(); mats.push(n.material); } });
-            // 크기를 사물 높이에 맞추고, 바닥에 세우고, 방 안쪽을 보게 돌린다
-            const box = new T.Box3().setFromObject(mdl), size = box.getSize(new T.Vector3());
-            const h = (SPRITE_H[p.model] || 1.4) * (MODEL_SCALE[p.id] || 1), kk = h / (size.y || 1);
-            mdl.scale.setScalar(kk);
-            const ctr = box.getCenter(new T.Vector3());
-            mdl.position.set(-ctr.x * kk, -box.min.y * kk, -ctr.z * kk);
-            const holder = new T.Group(); holder.add(mdl);
-            holder.position.set(p.x, 0, cz + p.z); holder.rotation.y = p.face + (MODEL_TURN[p.id] || 0);
-            g.add(holder);
-            const foot = Math.max(size.x, size.z) * kk; rec.blob.scale.set(Math.max(0.9, foot * 1.1), Math.max(0.9, foot * 1.1), 1);
-            rec.model = holder; rec.modelMats = mats; rec.mkY = Math.max(2.2, h + 0.35);
-            o.visible = false; if (rec.sprite) rec.sprite.visible = false; G.sync();
-          }, undefined, () => {});
-        }
-        // 사물 그림 판: 늘 방 안쪽을 보게 세우고, 코드로 만든 모형은 숨긴다
-        const loadSprite = () => loader.load('images/obj_' + p.id.replace(/-/g, '_') + '.png', t => {
-          const h = SPRITE_H[p.model] || 1.4, w = h * t.image.width / t.image.height;
-          const geo = new T.PlaneGeometry(w, h); geo.translate(0, h / 2, 0);
-          const sm = new T.MeshLambertMaterial({ map: t, color: th.tint, transparent: true, alphaTest: 0.05, side: T.DoubleSide });
-          const sp = new T.Mesh(geo, sm); sp.position.set(p.x, -0.03, cz + p.z); sp.rotation.y = p.face; g.add(sp);
-          const bd2 = Math.max(0.9, Math.min(1.6, w * 0.85)); rec.blob.scale.set(bd2, bd2, 1);
-          o.visible = false; rec.sprite = sp; if (rec.model) sp.visible = false; else rec.mkY = Math.max(2.2, h + 0.35); G.sync();
-        }, undefined, () => {});
-        // 벽 감실 그림: 벽면에 그림을 끼우고 아래에 진짜 선반 턱을 단다. 그림이 없으면 그림 판으로 대신한다
-        const nc = p.niche, north = p.wall === 'north', side = p.x < 0 ? -1 : 1;
-        if (USE_ART) loader.load('images/' + nc.file, t => {
-          t.anisotropy = aniso;
-          const w = nc.h * t.image.width / t.image.height;
-          const pn = new T.Mesh(new T.PlaneGeometry(w, nc.h), new T.MeshLambertMaterial({ map: t }));
-          const sillM = L(0xd9d0bd);
-          if (north) {
-            const wz = cz - HD + 0.162;
-            pn.position.set(p.x, nc.y + nc.h / 2, wz);
-            add(g, B(w * 0.96, 0.06, 0.12), sillM, p.x, nc.y + 0.03, wz + 0.06);
-            mk.position.z = wz + 0.4; ring.position.z = wz + 0.7;
-          } else {
-            const wx = side * (HW - 0.012);
-            pn.position.set(wx, nc.y + nc.h / 2, cz + p.z);
-            add(g, B(0.12, 0.06, w * 0.96), sillM, wx - side * 0.06, nc.y + 0.03, cz + p.z);
-            mk.position.x = side * 6.6; ring.position.x = side * 6.3;
-          }
-          pn.rotation.y = p.face; g.add(pn);
-          o.visible = false; rec.blob.visible = false; if (rec.sprite) rec.sprite.visible = false;
-          rec.niche = pn; rec.mkY = nc.y + nc.h + 0.25; G.sync();
-        }, undefined, loadSprite);
         if (p.model === 'calculator') col(p.x - 1.25, p.x + 1.25, cz + p.z - 0.5, cz + p.z + 0.5);
         if (p.model === 'merchants') col(p.x + 0.3, p.x + 0.95, cz + p.z - 1.15, cz + p.z + 1.15); // 계산대(상인들은 동쪽을 본다)
         if (p.model === 'stonecoffin') { const sx2 = Math.abs(Math.sin(p.face)) > 0.5; col(p.x - (sx2 ? 1.05 : 0.5), p.x + (sx2 ? 1.05 : 0.5), cz + p.z - (sx2 ? 0.5 : 1.05), cz + p.z + (sx2 ? 0.5 : 1.05)); }
@@ -3837,9 +3757,6 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         accent[p.id].color.set(S.solved[p.id] ? 0xd7a93b : textured ? ACCENT_TINT[am] : (BASE_COL[p.model] || 0x8c6b3e)); o.mk.visible = !S.solved[p.id] || takePending(p);
         if (o.o.userData.hatchKey) o.o.userData.hatchKey.visible = !S.items.includes(p.id) && !S.opened[ROOMS[p.room] && ROOMS[p.room].id]; // 꺼내면 열쇠가 사라진다
         accent[p.id].emissive.set(S.solved[p.id] ? 0x3a2a08 : 0x000000);
-        if (o.sprite) o.sprite.material.emissive.set(S.solved[p.id] ? 0x3a2a08 : 0x000000);
-        if (o.niche) o.niche.material.emissive.set(S.solved[p.id] ? 0x2a1e06 : 0x000000);
-        if (o.modelMats) o.modelMats.forEach(m => { if (m.emissive) m.emissive.set(S.solved[p.id] ? 0x3a2a08 : 0x000000); });
       });
       // 등불을 옮겨 붙이면 거치대의 불과 표시가 꺼진다
       const tr = objs.__torch;
