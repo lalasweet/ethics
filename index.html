@@ -147,12 +147,50 @@ html.public #jumpSel { display: none; }
 .fallback .grid { display: flex; flex-wrap: wrap; gap: 8px; }
 .fallback button { border: 1px solid rgba(255,255,255,.35); background: rgba(255,255,255,.08); color: #fff; border-radius: 8px; padding: 8px 12px; }
 /* 시작 화면: 시대(챕터) 고르기 */
-.title { position: absolute; inset: 0; z-index: 5; overflow-y: auto; display: grid; align-content: center; justify-items: center; gap: 14px; padding: 22px 18px; text-align: center; color: #F4F1EA;
-  background: radial-gradient(ellipse at 50% 18%, #26324C, #080B11 72%); }
-.title h2 { font-size: clamp(26px, 4.4vw, 38px); }
-.title h2 .greek { color: #d9c48a; font-size: .68em; margin-left: .25em; }
-.title .eyebrow { color: #d9c48a; }
-.title .hook { max-width: 58ch; color: rgba(244,241,234,.82); font-size: 14.5px; }
+.title { position: absolute; inset: 0; z-index: 5; overflow-y: auto; color: #F4F1EA; text-align: center;
+  background: linear-gradient(rgba(8,11,17,.35), rgba(8,11,17,.2) 30%, rgba(8,11,17,.6) 62%, rgba(8,11,17,.92)), url(images/title_bg.jpg) center 70% / cover no-repeat, #080B11; }
+.title .twrap { min-height: 100%; display: grid; grid-template-rows: 1fr auto; }
+.title .tmain { display: grid; align-content: center; justify-items: center; gap: 16px; padding: 36px 16px 22px; }
+.title .eyebrow { margin: 0; font-size: 13px; letter-spacing: .18em; color: #d9c48a; }
+.title h2 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: clamp(36px, 7vw, 62px); line-height: 1.1; letter-spacing: .02em; text-shadow: 0 2px 18px rgba(0,0,0,.6); }
+.title h2 .greek { display: block; margin-top: 6px; font-family: var(--f-greek); font-style: italic; font-weight: 400; font-size: .38em; letter-spacing: .4em; color: #d9c48a; }
+.title .hook { margin: 0; max-width: 52ch; font-size: 14.5px; line-height: 1.7; color: rgba(244,241,234,.78); }
+.title .tstart { display: grid; gap: 8px; justify-items: center; margin-top: 4px; }
+.title .bstart { min-width: 230px; padding: 15px 32px; border-radius: 999px; border: 1px solid rgba(242,196,90,.75); background: linear-gradient(#f2c45a, #c99a34); color: #1a1408; font-weight: 700; font-size: 19px; letter-spacing: .06em; box-shadow: 0 6px 28px rgba(242,196,90,.28); }
+.title .bstart:hover { filter: brightness(1.06); }
+.title .bsub { padding: 9px 20px; border-radius: 999px; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.07); color: #F4F1EA; font-size: 14px; font-weight: 500; }
+.title .tprog { font-size: 12.5px; color: rgba(244,241,234,.66); }
+.title .task { display: grid; gap: 8px; justify-items: center; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(242,196,90,.45); background: rgba(12,16,26,.85); font-size: 13.5px; }
+.title .task div { display: flex; gap: 8px; }
+.title .trow { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.title .tgl { display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px 8px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,.18); background: rgba(12,16,26,.62); color: #F4F1EA; font-size: 14px; font-weight: 500; }
+.title .tgl .sw { width: 38px; height: 22px; border-radius: 11px; background: rgba(255,255,255,.2); position: relative; transition: background .2s; }
+.title .tgl .sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .2s; }
+.title .tgl[aria-pressed="true"] .sw { background: #6fae6a; }
+.title .tgl[aria-pressed="true"] .sw::after { left: 19px; }
+.title .tgl .st { font-size: 12px; color: rgba(244,241,234,.66); min-width: 22px; text-align: left; }
+.title .tpanels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; width: 100%; max-width: 860px; margin-top: 4px; }
+.title .tpanel { text-align: left; padding: 15px 17px; border-radius: 12px; border: 1px solid rgba(255,255,255,.16); background: rgba(12,16,26,.66); }
+.title .tpanel h3 { margin: 0 0 10px; font-size: 14px; letter-spacing: .08em; color: #d9c48a; }
+.title .ttabs { display: flex; gap: 6px; margin-bottom: 10px; }
+.title .ttabs button { padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.18); background: transparent; color: rgba(244,241,234,.66); font-size: 12px; }
+.title .ttabs button[aria-selected="true"] { background: rgba(255,255,255,.12); color: #F4F1EA; }
+.title .tkeys { display: grid; grid-template-columns: auto 1fr; gap: 7px 12px; align-items: center; font-size: 13.5px; }
+.title .tkeys .k { white-space: nowrap; }
+.title .tera p { margin: 0 0 10px; font-size: 13px; line-height: 1.6; color: rgba(244,241,234,.7); }
+.title .tcode { display: flex; gap: 6px; }
+.title .tcode input { flex: 1; min-width: 0; padding: 9px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,.2); background: rgba(0,0,0,.35); color: #F4F1EA; font-size: 15px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; }
+.title .tcode button { padding: 9px 14px; border-radius: 8px; border: 1px solid rgba(242,196,90,.6); background: rgba(242,196,90,.14); color: #f2c45a; font-size: 13.5px; font-weight: 600; }
+.title .tfb { min-height: 18px; margin: 8px 0 0; font-size: 12.5px; color: #e58a7a; }
+.title .tlock { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 4px; }
+.title .tlock span { display: grid; gap: 2px; padding: 8px 4px; border-radius: 8px; border: 1px dashed rgba(255,255,255,.2); font-size: 11.5px; text-align: center; color: rgba(244,241,234,.45); }
+.title .tlock span b { font-size: 12.5px; color: rgba(244,241,234,.6); }
+.title .tera .chgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 2px; max-width: none; }
+.title .tera .chcard { min-height: 70px; padding: 8px 9px 9px; }
+.title .tera .chcard b { font-size: 15px; }
+.title .tfoot { padding: 14px 16px 18px; border-top: 1px solid rgba(255,255,255,.08); background: rgba(5,7,11,.72); font-size: 11.5px; line-height: 1.8; color: rgba(244,241,234,.52); }
+.title .tfoot b { color: rgba(244,241,234,.74); font-weight: 600; }
+.title .tfoot a { color: inherit; }
 .chgrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; width: 100%; max-width: 920px; }
 .chcard { --c: #77AEDF; text-align: left; display: grid; gap: 3px; align-content: start; min-height: 132px; padding: 12px 12px 14px; border-radius: 10px;
   border: 1px solid rgba(255,255,255,.2); border-top: 3px solid var(--c); background: rgba(255,255,255,.06); color: #F4F1EA; }
@@ -163,11 +201,10 @@ html.public #jumpSel { display: none; }
 .chcard .st { margin-top: auto; padding-top: 8px; font-size: 12.5px; font-weight: 500; color: var(--c); }
 .chcard.done .st { color: #f2c45a; }
 .chcard:disabled { opacity: .42; border-style: dashed; border-top-style: solid; cursor: not-allowed; }
-.title .credit3d { margin: 2px 0 0; font-size: 11px; opacity: .55; text-align: center; }
-.title .credit3d a { color: inherit; }
-.title .keys { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 16px; font-size: 12.5px; opacity: .78; }
 .title kbd { background: rgba(255,255,255,.12); color: #fff; border-color: rgba(255,255,255,.35); }
-@media (max-width: 760px) { .chgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .title { align-content: start; } .chcard { min-height: 108px; } }
+@media (max-width: 760px) { .title .tpanels { grid-template-columns: 1fr; } .title .tlock { grid-template-columns: repeat(3, minmax(0, 1fr)); } .chgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .chcard { min-height: 100px; } }
+/* 세로로 긴 화면(휴대폰): 그림을 잘라 키우지 않고 위쪽에 가로 전체로 한 장, 아래는 어둡게 녹아든다 */
+@media (max-aspect-ratio: 1/1) { .title { background: linear-gradient(rgba(8,11,17,.15), rgba(8,11,17,.1) 12vw, rgba(8,11,17,.75) 52vw, #080B11 62vw), url(images/title_bg.jpg) center top / 100% auto no-repeat, #080B11; } .title .tmain { padding-top: 30vw; } }
 .gamebar { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
 .gamebar label { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: 13.5px; }
 .gamebar input[type=range] { width: 120px; accent-color: var(--aegean); }
@@ -464,7 +501,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     <div class="hud hud-room" id="hudRoom"><b>고대 그리스</b><span>아테네의 아고라</span></div>
     <div class="hud hud-top" id="hudTop" aria-hidden="true"></div>
     <div class="hud-btns">
-      <button type="button" id="menuBtn">시대 선택</button>
+      <button type="button" id="menuBtn">첫 화면</button>
       <button type="button" id="lampBtn" aria-pressed="true" hidden>등불</button>
       <button type="button" id="sndBtn" aria-pressed="true">소리</button>
       <select id="jumpSel" aria-label="교사용 방 이동"></select>
@@ -701,7 +738,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     lamp: a => tone(a, 1320, 0.06, 'square', 0.03),
     bell: a => [[0, 196], [1.4, 196]].forEach(([d, f]) => [[1, 0.2, 4.5], [2.0, 0.09, 3], [2.4, 0.07, 2.4], [3.0, 0.05, 1.8], [4.2, 0.03, 1.2], [0.5, 0.08, 5]].forEach(([m2, v, du]) => tone(a, f * m2, du, 'sine', v, d))) // 종: 낮은 울림 + 맑은 배음, 두 번
   };
-  function sfx(n) { if (S.sound === false) return; const a = audio(); if (a && SFX[n]) try { SFX[n](a); } catch (e) {} }
+  function sfx(n) { if (S.effects === false) return; const a = audio(); if (a && SFX[n]) try { SFX[n](a); } catch (e) {} }
   // 장마다 배경 음악(audio/bgm_<장 id>.mp3, Suno). 없는 장은 코드로 만든 은은한 바람 소리. 끝과 시작은 1.5초씩 줄였다 키워 이음매를 숨긴다
   // 방에 bgm이 있으면(room.bgm, 예: 칸트 방들 'kant', 공리주의 방들 'utility') 그 음악(audio/bgm_<이름>.mp3)을 먼저 쓰고, 파일이 없으면 장 음악으로
   const BGM = { greece: 'audio/bgm_greece.mp3', hellenism: 'audio/bgm_hellenism.mp3', medieval: 'audio/bgm_medieval.mp3', modern: 'audio/bgm_modern.mp3', kant: 'audio/bgm_kant.mp3', utility: 'audio/bgm_utility.mp3' }; let bgmEl = null, bgmRoom = null; const bgmBad = {};
@@ -710,7 +747,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     const src = on && S.ch != null && (pick(bgmRoom) || pick(CHAPTERS[S.ch].id));
     if (bgmEl && (!src || bgmEl.dataset.src !== src)) { bgmEl.pause(); bgmEl = null; }
     if (src && !bgmEl) { bgmEl = new Audio(src); bgmEl.dataset.src = src; bgmEl.loop = true; bgmEl.volume = 0;
-      bgmEl.addEventListener('error', () => { bgmBad[src] = true; if (bgmEl && bgmEl.dataset.src === src) { bgmEl = null; ambience(S.playing && S.sound !== false); } }); /* 파일이 없으면 다음 후보(장 음악·바람 소리)로 */ bgmEl.addEventListener('timeupdate', e => { const a = e.target, d = a.duration || 0, c = a.currentTime; a.volume =0.35 * Math.max(0, Math.min(1, c / 1.5, d ? (d - c) / 1.5 : 1)); }); }
+      bgmEl.addEventListener('error', () => { bgmBad[src] = true; if (bgmEl && bgmEl.dataset.src === src) { bgmEl = null; ambience(S.playing && S.music !== false); } }); /* 파일이 없으면 다음 후보(장 음악·바람 소리)로 */ bgmEl.addEventListener('timeupdate', e => { const a = e.target, d = a.duration || 0, c = a.currentTime; a.volume =0.35 * Math.max(0, Math.min(1, c / 1.5, d ? (d - c) / 1.5 : 1)); }); }
     if (bgmEl) bgmEl.play().catch(() => {});
     const a = audio(); if (!a) return; if (src) on = false; // 음악이 있으면 바람 소리는 끈다
     if (!amb) { const s = a.createBufferSource(), f = a.createBiquadFilter(), gn = a.createGain(); s.buffer = noiseBuf(a, 4); s.loop = true; f.type = 'lowpass'; f.frequency.value = 380; gn.gain.value = 0; s.connect(f).connect(gn).connect(a.destination); s.start(); amb = gn; }
@@ -721,8 +758,8 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
   document.addEventListener('visibilitychange', () => {
     if (!AC) return;
     if (document.visibilityState === 'hidden') { AC.suspend().catch(() => {}); if (bgmEl) bgmEl.pause(); }
-    else if (bgmEl && S.playing && S.sound !== false) bgmEl.play().catch(() => {});
-    else if (S.playing && S.sound !== false) AC.resume().catch(() => {});
+    else if (bgmEl && S.playing && S.music !== false) bgmEl.play().catch(() => {});
+    else if (S.playing) AC.resume().catch(() => {}); // 효과음도 이 소리판으로 나므로 늘 다시 켠다(배경음 끔은 ambience가 따로)
   });
   window.addEventListener('pagehide', () => { if (AC) AC.suspend().catch(() => {}); });
   window.addEventListener('blur', () => { if (AC && document.hidden) AC.suspend().catch(() => {}); });
@@ -1255,13 +1292,14 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
   // 장 마무리: 마지막 방의 문을 열면 다음 시대로 넘어갈 수 있다
   function showEnd() {
     const C = CHAPTERS[S.ch], c = cur(), next = CHAPTERS[S.ch + 1];
-    c.done = true; renderStatus(); G.sync();
-    openModal(C.no + ' ' + C.name + ' · 완료', next ? '다음 시대로 갈 준비가 되었다' : '근대의 문이 열렸다');
+    c.done = true; const fin = allDone(); if (fin) S.unlocked = true; saveNow(); renderStatus(); G.sync();
+    openModal(C.no + ' ' + C.name + ' · 완료', next ? '다음 시대로 갈 준비가 되었다' : fin ? '모든 시대를 지나왔다' : '근대의 문이 열렸다');
     mbody.innerHTML = '<div class="end"><span class="word">' + esc(C.word || 'ΣΟΦΙΑ') + '</span>' +
       '<p class="lead">' + esc(C.end) + '</p>' +
       '<p class="lead">걸린 시간 <b>' + fmt(c.elapsed) + '</b> · 힌트 <b>' + c.hints + '회</b></p>' +
+      (fin ? '<div class="reward"><span class="ico txt big">🔓</span><div><b>완주 코드: ' + DONE_CODE + '</b><p class="lead">첫 화면의 ‘시대별 입장’에 이 코드를 넣으면, 원하는 시대를 골라 다시 들어갈 수 있어요. (이 기기에서는 벌써 열렸어요.)</p></div></div>' : '') +
       '<div class="recap">' + ROOMS.filter(r => r.puzzles.length).map(r => '<h4>' + esc(r.name) + '</h4>' + r.puzzles.map(p => '<div><b>' + esc(p.who) + '</b> · ' + esc(p.concept.terms.join(', ')) + '</div>').join('')).join('') + '</div>' +
-      '<div class="actions"><button class="btn" id="toTitle">시대 선택으로</button>' + (next ? '<button class="btn primary" id="toNext">' + esc(next.no + ' ' + next.name) + ' 시작 ▸</button>' : '<button class="btn primary" id="back">닫기</button>') + '</div></div>';
+      '<div class="actions"><button class="btn" id="toTitle">첫 화면으로</button>' + (next ? '<button class="btn primary" id="toNext">다음 시대로 · ' + esc(next.no + ' ' + next.name) + ' ▸</button>' : '<button class="btn primary" id="back">닫기</button>') + '</div></div>';
     $('toTitle').addEventListener('click', () => { closeModal(); showTitle(); });
     if (next) $('toNext').addEventListener('click', () => { closeModal(); enterChapter(S.ch + 1); });
     else $('back').addEventListener('click', closeModal);
@@ -3900,7 +3938,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         if (lastRoom !== -1 && S.playing) toast(ri);
         const rth = TH[ROOMS[ri].theme] || TH.agora;
         lastRoom = ri; renderStatus(); renderer.domElement.style.filter = rth.grade;
-        { const nb = ROOMS[ri].bgm || null; if (nb !== bgmRoom) { bgmRoom = nb; if (S.playing && S.sound !== false) ambience(true); } } // 방마다 다른 음악
+        { const nb = ROOMS[ri].bgm || null; if (nb !== bgmRoom) { bgmRoom = nb; if (S.playing && S.music !== false) ambience(true); } } // 방마다 다른 음악
         hemi.intensity = rth.amb == null ? 0.22 : rth.amb; dl.intensity = rth.sun == null ? 0.12 : rth.sun;
         scene.fog.color.setHex(rth.fog || 0x07090d); scene.fog.near = rth.fogN || 7; scene.fog.far = rth.fogF || 22; scene.background.setHex(rth.fog ? new T.Color(rth.fog).multiplyScalar(0.8).getHex() : 0x0b0f16); // 방마다 안개 빛(런던은 누런 안개)
         roomLights.forEach((ls, i) => ls.forEach(f => { f.on = i === ri; }));
@@ -3994,26 +4032,70 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
 
   // ───────────────────────── 시작 화면 · 장 고르기 ─────────────────────────
   const coarseUI = window.matchMedia && matchMedia('(pointer: coarse)').matches;
-  const KEYS_HTML = coarseUI
-    ? '<span>왼쪽 끌기: 걷기</span><span>오른쪽 끌기: 둘러보기</span><span>오른쪽 아래 버튼: 살펴보기</span>'
-    : '<span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 걷기</span><span>마우스 끌기: 둘러보기</span><span><kbd>E</kbd> · 클릭: 살펴보기</span><span><kbd>F</kbd> 등불</span>';
-  function renderTitle() {
-    $('title').innerHTML = '<p class="eyebrow">윤리와 사상 Ⅲ · 서양 윤리사상</p>' +
-      '<h2>소피아의 서고 <span class="greek">ΣΟΦΙΑ</span></h2>' +
-      '<p class="hook">도서관에서 낡은 윤리 책을 펼쳤다가 기원전 5세기 아테네로 떨어졌다. 집으로 돌아가려면 시대마다 사상가의 방에서 문제를 풀고, 다음 시대로 가는 문을 열어야 한다.</p>' +
-      '<div class="chgrid">' + CHAPTERS.map((c, i) => {
-        const st = S.chs[c.id], opened = c.rooms.filter(r => S.opened[r.id]).length;
-        const label = st && st.done ? '✓ 통과 · ' + fmt(st.elapsed) : st && st.seen ? '이어 하기 · 방 ' + Math.min(opened + 1, c.rooms.length) + '/' + c.rooms.length : '방 ' + c.rooms.length + '개 · 시작하기';
-        return '<button type="button" class="chcard' + (st && st.done ? ' done' : '') + '" data-ch="' + i + '" style="--c:' + c.color + '"><span class="no">' + esc(c.no) + '</span><b>' + esc(c.name) + '</b><span class="sub">' + esc(c.sub) + '</span><span class="st">' + esc(label) + '</span></button>';
-      }).join('') +
-      '<button type="button" class="chcard" disabled style="--c:#9aa3b2"><span class="no">5장</span><b>현대</b><span class="sub">다음 단원에서 열려요</span><span class="st">준비 중</span></button></div>' +
-      '<div class="keys">' + KEYS_HTML + '</div>' +
-      '<p class="credit3d">흉상 두상·수도원 석상 3D 스캔: 루브르 박물관 소장품, 소더비(Sotheby’s) 출품작(성모자상, 그리스도상), <a href="https://www.myminifactory.com/scantheworld/" target="_blank" rel="noopener">Scan the World</a>(MyMiniFactory) · ' +
-      '<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" target="_blank" rel="noopener">CC BY-NC-SA</a> · 게임용으로 가볍게 줄여 씀</p>';
+  // 첫 화면(2026-11-16): 게임 시작 하나로 1장부터 · 이어 하기(이 기기에 저장된 진행) · 배경음/효과음 따로 · 조작법 · 완주 코드로 여는 시대별 입장 · 출처와 사용한 도구
+  const DONE_CODE = 'SOPHIA'; // 4장까지 다 깨면 보여 주는 완주 코드(반 전체가 같은 코드)
+  const hasProgress = () => Object.keys(S.solved).length > 0 || Object.keys(S.opened).length > 0 || CHAPTERS.some(c => S.chs[c.id] && S.chs[c.id].seen);
+  const allDone = () => CHAPTERS.every(c => S.chs[c.id] && S.chs[c.id].done);
+  function progressText() {
+    const i = S.last != null ? S.last : 0, c = CHAPTERS[i]; if (!c) return '';
+    const st = S.chs[c.id]; if (st && st.done && !CHAPTERS[i + 1]) return '모든 시대를 지나왔어요';
+    const r = c.rooms.find(r => !S.opened[r.id]) || c.rooms[c.rooms.length - 1];
+    return '지난번: ' + c.no + ' ' + c.name + ' · ' + r.name;
   }
-  $('title').addEventListener('click', e => { const b = e.target.closest('.chcard'); if (b && !b.disabled) enterChapter(+b.dataset.ch); });
-  function showTitle() {
-    S.playing = false; if (G.release) G.release(); ambience(false);
+  const KEYS_PC = '<span class="k"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span>걷기 (방향키도 돼요)</span><span class="k">마우스 끌기</span><span>둘러보기</span>' +
+    '<span class="k"><kbd>E</kbd> · 클릭</span><span>살펴보기 · 문제 열기</span><span class="k"><kbd>F</kbd></span><span>등불 켜고 끄기</span><span class="k"><kbd>Esc</kbd></span><span>창 닫기</span>';
+  const KEYS_TOUCH = '<span class="k">왼쪽 끌기</span><span>걷기</span><span class="k">오른쪽 끌기</span><span>둘러보기</span><span class="k">🔍 버튼</span><span>살펴보기 · 문제 열기</span>' +
+    '<span class="k">등불 버튼</span><span>등불 켜고 끄기</span><span class="k">✕</span><span>창 닫기</span>';
+  let titleKeys = coarseUI ? 'touch' : 'pc', titleAsk = false;
+  function renderTitle() {
+    const prog = hasProgress(), tg = (id, on, icon, name) => '<button type="button" class="tgl" id="' + id + '" aria-pressed="' + on + '">' + icon + ' ' + name + ' <span class="sw"></span><span class="st">' + (on ? '켬' : '끔') + '</span></button>';
+    $('title').innerHTML = '<div class="twrap"><div class="tmain">' +
+      '<p class="eyebrow">윤리와 사상 게이미피케이션 복습 활동</p>' +
+      '<h2>소피아의 서고<span class="greek">ΣΟΦΙΑ</span></h2>' +
+      '<p class="hook">도서관에서 낡은 윤리 책을 펼쳤다가 기원전 5세기 아테네로 떨어졌다.<br>집으로 돌아가려면 시대마다 사상가의 방에서 문제를 풀고, 다음 시대로 가는 문을 열어야 한다.</p>' +
+      '<div class="tstart">' + (titleAsk
+        ? '<div class="task"><span>처음부터 다시 시작할까요? 이 기기에 저장된 진행이 지워져요.</span><div><button type="button" class="bsub" id="tNewYes">처음부터</button><button type="button" class="bsub" id="tNewNo">취소</button></div></div>'
+        : '<button type="button" class="bstart" id="tStart">게임 시작</button>' + (prog ? '<button type="button" class="bsub" id="tCont">이어 하기</button><span class="tprog">' + esc(progressText()) + '</span>' : '')) + '</div>' +
+      '<div class="trow">' + tg('tMusic', S.music !== false, '🎵', '배경음') + tg('tSfx', S.effects !== false, '🔔', '효과음') + '</div>' +
+      '<div class="tpanels"><div class="tpanel"><h3>조작법</h3><div class="ttabs"><button type="button" data-keys="pc" aria-selected="' + (titleKeys === 'pc') + '">컴퓨터</button><button type="button" data-keys="touch" aria-selected="' + (titleKeys === 'touch') + '">휴대폰·태블릿</button></div>' +
+        '<div class="tkeys">' + (titleKeys === 'pc' ? KEYS_PC : KEYS_TOUCH) + '</div></div>' +
+      '<div class="tpanel tera"><h3>' + (S.unlocked ? '🔓 시대별 입장' : '🔒 시대별 입장') + '</h3>' + (S.unlocked
+        ? '<p>원하는 시대를 골라 들어가요. 진행은 시대마다 따로 이어져요.</p><div class="chgrid">' + CHAPTERS.map((c, i) => {
+            const st = S.chs[c.id], label = st && st.done ? '✓ 통과' : st && st.seen ? '이어 하기' : '들어가기';
+            return '<button type="button" class="chcard' + (st && st.done ? ' done' : '') + '" data-ch="' + i + '" style="--c:' + c.color + '"><span class="no">' + esc(c.no) + '</span><b>' + esc(c.name) + '</b><span class="st">' + esc(label) + '</span></button>'; }).join('') +
+          '<button type="button" class="chcard" disabled style="--c:#9aa3b2"><span class="no">5장</span><b>현대</b><span class="st">준비 중</span></button></div>'
+        : '<p>끝까지 다 깨면 <b style="color:#f2c45a">완주 코드</b>가 나와요. 코드를 넣으면 원하는 시대를 골라 다시 들어갈 수 있어요.</p>' +
+          '<div class="tcode"><input type="text" id="tCodeIn" placeholder="코드 입력" maxlength="12" aria-label="완주 코드" autocomplete="off"><button type="button" id="tCodeGo">열기</button></div><p class="tfb" id="tCodeFb"></p>' +
+          '<div class="tlock">' + CHAPTERS.map(c => '<span>' + esc(c.no) + '<b>' + esc(c.name) + '</b></span>').join('') + '<span>5장<b>현대</b></span></div>') + '</div></div>' +
+      '</div><div class="tfoot"><b>출처 · 사용한 도구</b><br>' +
+      '이미지(질감·인물·아이콘·문·첫 화면): <b>Google Gemini</b>(Nano Banana)로 만든 AI 그림 · 배경 음악: <b>Suno</b>로 만든 AI 음악 · 3D 소품: <b>Blender</b>로 직접 모델링<br>' +
+      '흉상 두상·수도원 석상 3D 스캔: 루브르 박물관 소장품, 소더비(Sotheby’s) 출품작(성모자상·그리스도상), <a href="https://www.myminifactory.com/scantheworld/" target="_blank" rel="noopener">Scan the World</a>(MyMiniFactory) · <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" target="_blank" rel="noopener">CC BY-NC-SA</a> · 게임용으로 가볍게 줄여 씀<br>' +
+      '3D 엔진: <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a>(MIT) · 글꼴: Pretendard, Noto Sans KR, Noto Serif, Pinyon Script, EB Garamond(SIL Open Font License) · 개발 도움: <b>Claude</b>(Anthropic)</div></div>';
+  }
+  function newGame() { // 처음부터: 진행만 지우고 설정(등불·소리·시점 감도·시대별 입장)은 남긴다
+    const keep = { lantern: S.lantern, music: S.music, effects: S.effects, sens: S.sens, unlocked: S.unlocked };
+    S = Object.assign(fresh(), keep); titleAsk = false; saveNow(); enterChapter(0);
+  }
+  function continueGame() { let i = S.last != null ? S.last : 0; const st = S.chs[CHAPTERS[i].id]; if (st && st.done && CHAPTERS[i + 1]) i++; enterChapter(i); }
+  function tryCode() {
+    const v = ($('tCodeIn').value || '').trim().toUpperCase().replace(/\s/g, '');
+    if (v === DONE_CODE || v === 'ΣΟΦΙΑ') { S.unlocked = true; saveNow(); sfx('ok'); renderTitle(); }
+    else { $('tCodeFb').textContent = '코드가 맞지 않아요. 4장까지 끝까지 깨면 코드가 나와요.'; sfx('bad'); }
+  }
+  $('title').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.classList.contains('chcard')) { if (!b.disabled) enterChapter(+b.dataset.ch); return; }
+    if (b.dataset.keys) { titleKeys = b.dataset.keys; renderTitle(); return; }
+    if (b.id === 'tStart') { if (hasProgress()) { titleAsk = true; renderTitle(); } else newGame(); return; }
+    if (b.id === 'tNewYes') return newGame();
+    if (b.id === 'tNewNo') { titleAsk = false; renderTitle(); return; }
+    if (b.id === 'tCont') return continueGame();
+    if (b.id === 'tMusic') { S.music = S.music === false; audio(); syncSoundBtn(); saveNow(); renderTitle(); return; }
+    if (b.id === 'tSfx') { S.effects = S.effects === false; syncSoundBtn(); saveNow(); sfx('ok'); renderTitle(); return; }
+    if (b.id === 'tCodeGo') return tryCode();
+  });
+  $('title').addEventListener('keydown', e => { if (e.target.id === 'tCodeIn' && e.key === 'Enter') tryCode(); e.stopPropagation(); });  function showTitle() {
+    S.playing = false; saveNow(); if (G.release) G.release(); ambience(false);
     if (G.prefetchKits && !showTitle.pre) { showTitle.pre = true; setTimeout(() => G.prefetchKits(), 1500); } // 시작 화면에서 모델을 미리 받아 둔다
     renderTitle(); $('title').hidden = false; renderStatus(); G.sync();
   }
@@ -4026,7 +4108,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     G.build(); G.place(cs.pos);
     $('title').hidden = true;
     const go = () => {
-      S.playing = true; cs.seen = true; renderStatus(); G.sync(); ambience(S.sound !== false);
+      S.playing = true; cs.seen = true; S.last = i; saveNow(); renderStatus(); G.sync(); ambience(S.music !== false);
       if (G.startToast) G.startToast();
       try { $('game').focus({ preventScroll: true }); } catch (e) {}
     };
@@ -4070,9 +4152,11 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     next();
   }
   function setLamp(on) { S.lantern = on; $('lampBtn').setAttribute('aria-pressed', String(on)); }
-  function setSound(on) { S.sound = on; $('sndBtn').setAttribute('aria-pressed', String(on)); ambience(on && S.playing); }
+  // 게임 안 「소리」 버튼은 배경음·효과음을 한꺼번에 켜고 끈다. 첫 화면에서는 따로 고른다
+  function syncSoundBtn() { $('sndBtn').setAttribute('aria-pressed', String(S.music !== false || S.effects !== false)); if (S.playing) ambience(S.music !== false); }
+  function setSound(on) { S.music = S.effects = on; syncSoundBtn(); saveNow(); }
   $('lampBtn').addEventListener('click', () => { setLamp(S.lantern === false); sfx('lamp'); });
-  $('sndBtn').addEventListener('click', () => setSound(S.sound === false));
+  $('sndBtn').addEventListener('click', () => setSound(!(S.music !== false || S.effects !== false)));
   document.addEventListener('keydown', e => { if (e.code === 'KeyF' && S.playing && lampAvail() && !modalOpen() && !(e.target.closest && e.target.closest('input, select, textarea'))) { setLamp(S.lantern === false); sfx('lamp'); } });
 
   $('sens').addEventListener('input', e => { S.sens = +e.target.value; });
@@ -4092,20 +4176,30 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
   $('resetBtn').addEventListener('click', () => { $('resetAsk').hidden = false; });
   $('resetNo').addEventListener('click', () => { $('resetAsk').hidden = true; });
   $('resetYes').addEventListener('click', () => {
-    const keep = { lantern: S.lantern, sound: S.sound };
-    S = Object.assign(fresh(), keep); $('resetAsk').hidden = true;
+    const keep = { lantern: S.lantern, music: S.music, effects: S.effects, unlocked: S.unlocked };
+    S = Object.assign(fresh(), keep); $('resetAsk').hidden = true; saveNow();
     $('sens').value = 1; showTitle();
   });
   $('game').tabIndex = -1;
 
+  // 진행 저장(2026-11-16): 이 기기·이 브라우저에만(localStorage). 서버로 보내지 않는다. 시크릿 창이나 기록을 지우는 PC에선 남지 않을 수 있다
+  const SAVE_KEY = 'sophia-escape-save';
+  let fromDisk = false;
+  function saveNow() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
+  function loadDisk() { try { const s = localStorage.getItem(SAVE_KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
+  setInterval(() => { if (S.playing) saveNow(); }, 4000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveNow(); });
+  window.addEventListener('pagehide', saveNow);
   function boot(data) {
+    if (!(data && data.v === 2)) { const d = loadDisk(); if (d && d.v === 2) { data = d; fromDisk = true; } }
     if (data && data.v === 2) S = Object.assign(fresh(), data);
+    if (S.music == null && S.sound === false) S.music = S.effects = false; delete S.sound; // 예전 소리 설정(하나)을 배경음·효과음으로 나눈다
     $('sens').value = S.sens || 1;
     let ok = false;
     try { ok = init3D(); } catch (e) { ok = false; console.error(e); }
     if (!ok) initFallback();
-    setLamp(S.lantern !== false); $('sndBtn').setAttribute('aria-pressed', String(S.sound !== false));
-    if (S.playing && S.ch != null) enterChapter(S.ch, true); else showTitle();
+    setLamp(S.lantern !== false); syncSoundBtn();
+    if (S.playing && S.ch != null && !fromDisk) enterChapter(S.ch, true); else showTitle(); // 이 기기에 저장된 진행에서 열면 첫 화면(「이어 하기」)부터
   }
   const hot = window.claude && window.claude.hot;
   if (hot && hot.snapshot) hot.snapshot(() => S);
