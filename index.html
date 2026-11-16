@@ -585,6 +585,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
 <script>
 (function () {
   'use strict';
@@ -1373,7 +1374,10 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     // 윈도우의 '애니메이션 효과 끄기'(성능 옵션 '최적 성능' 포함)가 브라우저에 '움직임 줄이기'로 전해져, 학교 컴퓨터에서 컷인·불꽃이 멈춰 보이는 일이 잦다. 게임 연출은 그 설정과 상관없이 켠다
     const reduce = false;
     const coarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+    // 렉 잡기①: 휴대폰은 화면 해상도를 조금 낮게 시작하고, 버벅이면 저절로 더 낮춘다(loop의 perfAcc)
+    const PR_MAX = Math.min(window.devicePixelRatio || 1, coarse ? 1.25 : 1.75), PR_MIN = coarse ? 0.7 : 0.85;
+    let prNow = PR_MAX, perfAcc = 0, perfN = 0, frameN = 0;
+    renderer.setPixelRatio(prNow);
     host.insertBefore(renderer.domElement, host.firstChild);
     renderer.domElement.setAttribute('aria-hidden', 'true');
 
@@ -1386,13 +1390,21 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     // 바탕빛과 달빛의 세기는 방마다 바꿀 수 있다(theme의 amb·sun). 감옥은 아주 어둡게 해서 등불을 쓰게 한다
     const hemi = new T.HemisphereLight(0x9fb4d8, 0x1a1410, 0.22); scene.add(hemi);
     const dl = new T.DirectionalLight(0x8fa8d8, 0.12); dl.position.set(-4, 10, 6); scene.add(dl); scene.add(dl.target);
-    renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap; // 실제 그림자(theme.shadow 방에서만 빛이 그림자를 드리운다)
+    renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
+    // 렉 잡기③: 그림자는 매 화면 다시 그리지 않고, 방에 들어설 때·무언가 움직일 때(shadowT초 동안)만 다시 그린다
+    renderer.shadowMap.autoUpdate = false; renderer.shadowMap.needsUpdate = true; // 실제 그림자(theme.shadow 방에서만 빛이 그림자를 드리운다)
     dl.shadow.mapSize.set(1024, 1024); Object.assign(dl.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9, near: 1, far: 30 }); dl.shadow.bias = -0.0008; dl.shadow.normalBias = 0.02;
     let showList = []; // showList: 조건에 따라 보였다 숨는 꾸밈(책장에 기댄 사다리)
     scene.add(camera);
     const lantern = new T.PointLight(0xffd59a, 1.15, 8.5, 2); lantern.position.set(0.25, -0.15, -0.2); camera.add(lantern);
     // 장마다 새로 채우는 목록들 (buildWorld가 비우고 다시 만든다)
     let roomLights = [], flames = [], colliders = [], doors = [], objs = {}, accent = {}, world = null;
+    // 렉 잡기②: 방 묶음(roomG[방 번호]). 지금 방과 앞뒤 방만 그리고, 불빛은 지금 방 것만 셈에 넣는다
+    let roomG = [], visRi = -1, visArr = null, shadowT = 1;
+    function applyRoomVis(ri) {
+      roomG.forEach((rg, i) => { if (!rg) return; rg.visible = Math.abs(i - ri) <= 1; rg.traverse(n => { if (n.isLight && !n.isDirectionalLight && !n.isHemisphereLight) n.visible = i === ri; }); });
+      shadowT = Math.max(shadowT, 1.5);
+    }
     // 바닥 높이(복층): 평평한 단 {x0,x1,z0,z1,y}와 경사(계단) {x0,x1,z0,z1,y0(z0쪽),y1(z1쪽)}. 그 밖은 0
     let floors = [];
     // 움직이는 부분(비석의 작은 문, 정원의 쇠창살 문): on()이 참이면 a1, 아니면 a0 각도로 천천히 돌아간다
@@ -1450,7 +1462,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       const spr = (map, c2, blend) => { const s = new T.Sprite(new T.SpriteMaterial({ map, color: c2, transparent: true, depthWrite: false, blending: blend || T.AdditiveBlending })); g.add(s); return s; };
       const sp = spr(glowTex, color || 0xffffff);
       sp.position.set(x, y, z); sp.scale.set(size, size, 1);
-      const f = { sp, base: size, light: null, ph: Math.random() * 10, y };
+      const f = { sp, base: size, light: null, ph: Math.random() * 10, y, ri };
       const c = color == null ? 0xffb060 : color, warm = ((c >> 16) & 255) > (c & 255); // 푸른 달빛에는 불꽃 모양을 넣지 않는다
       const big = warm && withLight && size >= 0.84, mid = warm && !big && withLight && size >= 0.5 && !opt.plain;
       if (warm && size >= 0.3) {
@@ -1698,6 +1710,34 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       if (mt.isMeshLambertMaterial) n.material = phMat(mt);
       if (mt.transparent || !shadowed(n)) return;
       n.castShadow = !noCast(n) && !/^(Plane|Circle|Ring)/.test(n.geometry.type); n.receiveShadow = true; }); // 바닥·판 같은 얇은 면은 드리우지 않는다(그림자 얼룩 방지)
+    // 블렌더 모델 조각 합치기: 재질·그림자·꼭짓점 속성이 같은 조각을 한 덩어리로. 같은 모델·같은 재질이면 합친 결과를 함께 쓴다(메모리 절약).
+    // 모델 안에는 따로 움직이는 부분이 없다(움직이는 부분은 코드 도형이거나 별도 모델) → 합쳐도 동작이 바뀌지 않는다
+    const mergedKits = {};
+    function mergeKit(kit, file) {
+      const BGU = T.BufferGeometryUtils; if (!BGU || !BGU.mergeBufferGeometries) return kit;
+      kit.updateMatrixWorld(true);
+      const meshes = []; kit.traverse(n => { if (n.isMesh && !n.isInstancedMesh && !n.isSkinnedMesh) meshes.push(n); });
+      if (meshes.length < 4) return kit;
+      const sig = n => n.material.uuid + '|' + (n.castShadow ? 1 : 0) + (n.receiveShadow ? 1 : 0) + '|' + Object.keys(n.geometry.attributes).sort().join(',');
+      const key = file + '#' + meshes.map(sig).join(';');
+      let parts = mergedKits[key];
+      if (!parts) {
+        const inv = kit.matrixWorld.clone().invert(), groups = new Map();
+        meshes.forEach(n => { const s = sig(n); if (!groups.has(s)) groups.set(s, { list: [], mat: n.material, cast: n.castShadow, recv: n.receiveShadow }); groups.get(s).list.push(n); });
+        parts = [];
+        for (const gr of groups.values()) {
+          const anyIdx = gr.list.some(n => n.geometry.index), allIdx = gr.list.every(n => n.geometry.index);
+          const geos = gr.list.map(n => { let gm = n.geometry.clone(); if (anyIdx && !allIdx && gm.index) gm = gm.toNonIndexed(); gm.applyMatrix4(new T.Matrix4().multiplyMatrices(inv, n.matrixWorld)); return gm; });
+          const mg = geos.length === 1 ? geos[0] : BGU.mergeBufferGeometries(geos, false);
+          if (!mg) return kit; // 합치지 못하면 원래대로
+          mg.computeBoundingSphere(); parts.push({ geo: mg, mat: gr.mat, cast: gr.cast, recv: gr.recv });
+        }
+        mergedKits[key] = parts;
+      }
+      const out = new T.Group(); out.position.copy(kit.position); out.quaternion.copy(kit.quaternion); out.scale.copy(kit.scale);
+      parts.forEach(pt => { const ms = new T.Mesh(pt.geo, pt.mat); ms.castShadow = pt.cast; ms.receiveShadow = pt.recv; out.add(ms); });
+      return out;
+    }
     function loadKit(kind, g, m, sx, sy) {
       if (!kitGlass) kitGlass = new T.MeshLambertMaterial({ color: 0xd8ecf8, emissive: 0x18242c, transparent: true, opacity: 0.28, depthWrite: false }); // 모래시계 유리
       if (!kitWhite) { kitWhite = L(0xe8e2d4); kitBlack = L(0x3a332c); skin(kitWhite, 'marble', 0xf2eee6); skin(kitBlack, 'marble', 0x4a4038); kitBeard = L(0xd8d4cc); skin(kitBeard, 'wool', 0xeeeae2); }
@@ -1710,6 +1750,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         const MAP = { stone: stoneM, accent: (ext ? ext.accent : m) || stoneM, cypress: cypressM, white: kitWhite, black: kitBlack, bronze: bronzeM, gold: goldM, wood: woodM, woodD: woodD, iron: ironM,
           terra: terraM, linen: linenM, blue: blueClothM, skin: skinM, beard: kitBeard, wool: woolM, rock: caveRockM, olive: oliveM, leaf: leafM, glass: kitGlass, straw: strawM, water: waterM, leather: leatherM, burlap: burlapM, ember: emberM };
         if (ext) Object.keys(ext).forEach(k => { if (ext[k]) MAP[k] = ext[k]; });
+        shadowT = Math.max(shadowT, 0.2); // 모델이 늦게 도착하면 그림자를 한 번 더 그린다
         const old = g.children.slice(), kit = scene.clone(true);
         kit.traverse(n => {
           if (!n.isMesh) return;
@@ -1720,8 +1761,9 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
           else if (n.material.isMeshLambertMaterial) n.material = phMat(n.material);
           if (shadowed(g) && !n.material.transparent) { n.castShadow = !noCast(g); n.receiveShadow = true; }
         });
-        kit.scale.setScalar(KIT_SCALE[kind] || 1); if (sx) kit.scale.x *= sx; if (sy) kit.scale.y *= sy;
-        old.forEach(c => { if (!c.userData.keep) c.visible = false; }); g.add(kit);
+        const mk = mergeKit(kit, file); // 렉 잡기⑤: 같은 재질 조각을 하나로 합쳐 그리기 횟수를 줄인다(가판대 307조각 → 십여 개)
+        mk.scale.setScalar(KIT_SCALE[kind] || 1); if (sx) mk.scale.x *= sx; if (sy) mk.scale.y *= sy;
+        old.forEach(c => { if (!c.userData.keep) c.visible = false; }); g.add(mk);
       });
     }
     const H = 3.8;
@@ -2724,11 +2766,11 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       if (world) { scene.remove(world); world.traverse(n => { if (n.material && !Array.isArray(n.material) && isShared(n.material)) n.material = null; }); disposeTree(world); }
       world = new T.Group(); scene.add(world);
       showList = [];
-      roomLights = ROOMS.map(() => []); flames = []; colliders = []; doors = []; objs = {}; accent = {}; floors = []; anims = []; secret = null; rings = []; ringFx = null; insFx = null; darkList = []; scaleWeights = null;
+      roomLights = ROOMS.map(() => []); roomG = []; shadowT = 2; flames = []; colliders = []; doors = []; objs = {}; accent = {}; floors = []; anims = []; secret = null; rings = []; ringFx = null; insFx = null; darkList = []; scaleWeights = null;
       buildInter();
 
     ROOMS.forEach((r, ri) => {
-      const k = r.theme, th = TH[k] || TH.agora, TX = th.tx, cz = -ri * RS, g = new T.Group(); world.add(g); g.userData.shadow = !!th.shadow; setTimeout(() => shadeAll(g), 0); // 방을 다 지은 뒤 한 번에 훑는다(모델은 loadKit이 따로)
+      const k = r.theme, th = TH[k] || TH.agora, TX = th.tx, cz = -ri * RS, g = new T.Group(); world.add(g); roomG[ri] = g; g.userData.shadow = !!th.shadow; setTimeout(() => shadeAll(g), 0); // 방을 다 지은 뒤 한 번에 훑는다(모델은 loadKit이 따로)
       const yb = roomBase(ri); g.position.y = yb; // 지하 방은 방 전체를 그 층 높이로 내린다
       const hw = th.hw || HW, RH = th.h || H, last = ri === ROOMS.length - 1, W2 = hw * 2, D2 = HD * 2, seg = hw - 0.8, sx = 0.8 + seg / 2, ph = th.ph || 2.6;
       const prevHW = ri ? ((TH[ROOMS[ri - 1].theme] || TH.agora).hw || HW) : 0;
@@ -3788,6 +3830,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     }
 
     G.sync = () => {
+      shadowT = Math.max(shadowT, 6); // 풀이·문 열림 뒤 움직이는 동안 그림자를 따라 그린다
       ALLP.forEach(p => {
         const o = objs[p.id]; if (!o) return;
         // 재질 그림이 입혀졌으면 그림 색이 살도록 밝은 물감, 아니면 원래 단색
@@ -3898,7 +3941,12 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     }
     G.ring = id => { ringFx = { id, t: 0 }; sfx('bell'); }; // 건너뛰기: 바로 되돌아온다
     function loop() {
-      const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+      const rawDt = clock.getDelta(), dt = Math.min(rawDt, 0.05), t = clock.elapsedTime;
+      // 렉 잡기①: 2초마다 평균 화면 시간을 보고 해상도를 조절(느리면 낮추고, 여유 있으면 올림)
+      if (rawDt < 0.25 && document.visibilityState === 'visible') { perfAcc += rawDt; perfN++; }
+      if (perfAcc > 2) { const avg = perfAcc / perfN; perfAcc = 0; perfN = 0; let np = prNow;
+        if (avg > 0.045 && prNow > PR_MIN) np = Math.max(PR_MIN, prNow - 0.15); else if (avg < 0.022 && prNow < PR_MAX) np = Math.min(PR_MAX, prNow + 0.1);
+        if (np !== prNow) { prNow = np; renderer.setPixelRatio(prNow); resize(); } }
       if (S.playing && !modalOpen() && !cut) {
         let f = 0, s2 = 0, turn = 0;
         if (keys.KeyW || keys.ArrowUp) f += 1; if (keys.KeyS || keys.ArrowDown) f -= 1;
@@ -3931,6 +3979,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       doors.forEach((d, i) => { const target = S.opened[ROOMS[i].id] && !ROOMS[i].warp && i < ROOMS.length - 1 && !held['door:' + i] ? 1 : 0; d.open += (target - d.open) * Math.min(1, dt * 2.5); if (d.gate) d.pivot.position.y = -d.open * 2.45; else if (d.hatch) { d.pivot.rotation.z = d.open * 1.75; d.pivot2.rotation.z = -d.open * 1.75; } else if (d.double) { d.pivot.rotation.y = d.open * 1.6; d.pivot2.rotation.y = -d.open * 1.6; } else d.pivot.rotation.y = d.open * 1.75; });
       anims.forEach(a => { if (a.move) { const tk = a.on() ? 1 : 0; a.k += (tk - a.k) * Math.min(1, dt * a.sp); const k = a.k, e = k * k * (3 - 2 * k); a.o.position.lerpVectors(a.p0, a.p1, e); a.o.position.y += Math.sin(Math.PI * e) * 0.35; a.o.rotation.set(a.r0.x + (a.r1.x - a.r0.x) * e, a.r0.y + (a.r1.y - a.r0.y) * e, a.r0.z + (a.r1.z - a.r0.z) * e); return; } const tg = a.on() ? a.a1 : a.a0, tr = a.pos ? a.o.position : a.o.rotation, k = a.pos || a.axis; tr[k] += (tg - tr[k]) * Math.min(1, dt * 2.2); if (a.glow) a.glow.emissive.setHex(a.on() ? 0x6a4410 : 0); });
       const ri = roomOf(pos.z);
+      if (ri !== visRi || roomG !== visArr) { visRi = ri; visArr = roomG; applyRoomVis(ri); }
       { const R = ROOMS[ri], nx = ROOMS[ri + 1]; // 문제로 여는 문(lock.secret) 앞에 다가가면 안내 한 줄(쾨니히스베르크: 상점의 다툼 소리)
         if (R && R.lock && R.lock.secret && nx && !nx.down && !S.opened[R.id] && S.playing && !cut) { const d = Math.hypot(pos.x - (R.door || 0), pos.z - (-ri * RS - HD + 0.4));
           if (d < 1.8 && !sayNear[ri]) { sayNear[ri] = true; say(R.lock.need); sfx('bad'); } else if (d > 3.2) sayNear[ri] = false; } }
@@ -3960,6 +4009,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       }
       if (FW.side && !reduce) { FW.side.emissiveIntensity = 0.75 + 0.22 * Math.sin(t * 2.3) + 0.1 * Math.sin(t * 7.1); emberM.color.setRGB(1, 0.44 + 0.08 * Math.sin(t * 3.1), 0.15); } // 장작 틈과 불씨가 숨 쉬듯 밝아졌다 어두워진다
       flames.forEach(f => {
+        if (f.ri != null && f.ri !== ri) return; // 렉 잡기④: 다른 방의 불은 움직이지 않는다(보이지 않거나 문 너머라 멀다)
         const k = reduce ? 1 : 1 + Math.sin(t * 9 + f.ph) * 0.07 + Math.sin(t * 5.3 + f.ph * 2) * 0.05 + Math.sin(t * 23 + f.ph * 3) * 0.025;
         f.sp.scale.set(f.base * k, f.base * k, 1);
         if (f.light) f.light.intensity = f.on ? f.max * k : 0;
@@ -3996,7 +4046,9 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
       });
       lantern.intensity = S.lantern === false || !lampAvail() ? 0 : 1.15 * (reduce ? 1 : 1 + Math.sin(t * 7) * 0.025);
       if (t - mapT > 0.08) { drawMap(ri); mapT = t; }
-      syncVC(); renderer.render(scene, camera);
+      if ((frameN++ & 1) === 0) syncVC(); // 짝 재질 맞추기는 두 화면에 한 번
+      if (shadowT > 0) { renderer.shadowMap.needsUpdate = true; shadowT -= dt; }
+      renderer.render(scene, camera);
       requestAnimationFrame(loop);
     }
     requestAnimationFrame(loop);
