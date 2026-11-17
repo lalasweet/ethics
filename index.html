@@ -181,6 +181,13 @@ html.public #jumpSel { display: none; }
 .title .tcode { display: flex; gap: 6px; }
 .title .tcode input { flex: 1; min-width: 0; padding: 9px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,.2); background: rgba(0,0,0,.35); color: #F4F1EA; font-size: 15px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; }
 .title .tcode button { padding: 9px 14px; border-radius: 8px; border: 1px solid rgba(242,196,90,.6); background: rgba(242,196,90,.14); color: #f2c45a; font-size: 13.5px; font-weight: 600; }
+.title .treset { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px 8px; margin-top: 10px; font-size: 12.5px; line-height: 1.5; color: rgba(244,241,234,.75); }
+.title .treset span { flex: 1 1 180px; }
+.title .treset span.ok { color: #9fd49a; }
+.title .tresetpick { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; flex: 1 1 100%; }
+.title .treset button:disabled { opacity: .35; cursor: not-allowed; }
+.title .treset button { padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.06); color: rgba(244,241,234,.85); font-size: 12.5px; }
+.title .treset button.warn { border-color: rgba(229,138,122,.7); background: rgba(229,138,122,.16); color: #f0a898; font-weight: 600; }
 .title .tfb { min-height: 18px; margin: 8px 0 0; font-size: 12.5px; color: #e58a7a; }
 .title .tlock { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 4px; }
 .title .tlock span { display: grid; gap: 2px; padding: 8px 4px; border-radius: 8px; border: 1px dashed rgba(255,255,255,.2); font-size: 11.5px; text-align: center; color: rgba(244,241,234,.45); }
@@ -4098,7 +4105,7 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     '<span class="k"><kbd>E</kbd> · 클릭</span><span>살펴보기 · 문제 열기</span><span class="k"><kbd>F</kbd></span><span>등불 켜고 끄기</span><span class="k"><kbd>Esc</kbd></span><span>창 닫기</span>';
   const KEYS_TOUCH = '<span class="k">왼쪽 끌기</span><span>걷기</span><span class="k">오른쪽 끌기</span><span>둘러보기</span><span class="k">🔍 버튼</span><span>살펴보기 · 문제 열기</span>' +
     '<span class="k">등불 버튼</span><span>등불 켜고 끄기</span><span class="k">✕</span><span>창 닫기</span>';
-  let titleKeys = coarseUI ? 'touch' : 'pc', titleAsk = false;
+  let titleKeys = coarseUI ? 'touch' : 'pc', titleAsk = false, titleReset = false, titleResetDone = false;
   function renderTitle() {
     const prog = hasProgress(), tg = (id, on, icon, name) => '<button type="button" class="tgl" id="' + id + '" aria-pressed="' + on + '">' + icon + ' ' + name + ' <span class="sw"></span><span class="st">' + (on ? '켬' : '끔') + '</span></button>';
     $('title').innerHTML = '<div class="twrap"><div class="tmain">' +
@@ -4115,7 +4122,8 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
         ? '<p>원하는 시대를 골라 들어가요. 진행은 시대마다 따로 이어져요.</p><div class="chgrid">' + CHAPTERS.map((c, i) => {
             const st = S.chs[c.id], label = st && st.done ? '✓ 통과' : st && st.seen ? '이어 하기' : '들어가기';
             return '<button type="button" class="chcard' + (st && st.done ? ' done' : '') + '" data-ch="' + i + '" style="--c:' + c.color + '"><span class="no">' + esc(c.no) + '</span><b>' + esc(c.name) + '</b><span class="st">' + esc(label) + '</span></button>'; }).join('') +
-          '<button type="button" class="chcard" disabled style="--c:#9aa3b2"><span class="no">5장</span><b>현대</b><span class="st">준비 중</span></button></div>'
+          '<button type="button" class="chcard" disabled style="--c:#9aa3b2"><span class="no">5장</span><b>현대</b><span class="st">준비 중</span></button></div>' +
+          '<div class="treset">' + resetPanelHTML() + '</div>'
         : '<p>끝까지 다 깨면 <b style="color:#f2c45a">완주 코드</b>가 나와요. 코드를 넣으면 원하는 시대를 골라 다시 들어갈 수 있어요.</p>' +
           '<div class="tcode"><input type="text" id="tCodeIn" placeholder="코드 입력" maxlength="12" aria-label="완주 코드" autocomplete="off"><button type="button" id="tCodeGo">열기</button></div><p class="tfb" id="tCodeFb"></p>' +
           '<div class="tlock">' + CHAPTERS.map(c => '<span>' + esc(c.no) + '<b>' + esc(c.name) + '</b></span>').join('') + '<span>5장<b>현대</b></span></div>') + '</div></div>' +
@@ -4127,6 +4135,46 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
   function newGame() { // 처음부터: 진행만 지우고 설정(등불·소리·시점 감도·시대별 입장)은 남긴다
     const keep = { lantern: S.lantern, music: S.music, effects: S.effects, sens: S.sens, unlocked: S.unlocked };
     S = Object.assign(fresh(), keep); titleAsk = false; saveNow(); enterChapter(0);
+  }
+  // 시대별 진행 초기화(2026-11-17): 진행 기록의 이름은 모두 그 장의 방·퍼즐·주울 물건 id로 만들어진다
+  //   방 id, 퍼즐 id, 'lock-'·'soc:'·'tower:'·'key:'·'pick:'·'ins:'·'got:' + id, 방 id + '__note'/'__tomb' + 번호, 방 id + '-…'(garden-gate)
+  //   → 그 장의 id로 만든 기록만 지운다. 새 기록 이름을 만들 때도 이 규칙(장 안의 id로 시작)을 지킨다
+  function chapterOwns(ci) {
+    const ids = new Set(), rooms = [];
+    CHAPTERS[ci].rooms.forEach(r => { ids.add(r.id); rooms.push(r.id); (r.puzzles || []).forEach(p => ids.add(p.id)); (r.pickups || []).forEach(pk => { if (pk.id) ids.add(pk.id); }); });
+    return k => { const rest = String(k).replace(/^(lock-|soc:|tower:|key:|pick:|ins:|got:|door:)/, '');
+      return ids.has(rest) || rooms.some(rid => rest.startsWith(rid + '__') || rest.startsWith(rid + '-')); };
+  }
+  function chapterHasProgress(ci) {
+    const own = chapterOwns(ci), st = S.chs[CHAPTERS[ci].id];
+    return !!(st && (st.seen || st.done)) || Object.keys(S.solved).some(own) || Object.keys(S.opened).some(own) || S.items.some(own);
+  }
+  function resetChapter(ci) { // 그 장의 진행만 지우고, 다른 장의 진행과 설정·시대별 입장은 남긴다
+    const own = chapterOwns(ci);
+    ['solved', 'hinted', 'opened'].forEach(f => Object.keys(S[f] || {}).forEach(k => { if (own(k)) delete S[f][k]; }));
+    if (S.seen) Object.keys(S.seen).forEach(k => { if (own(k)) delete S.seen[k]; });
+    S.items = S.items.filter(k => !own(k));
+    delete S.chs[CHAPTERS[ci].id];
+    if (ci === 0) S.lampGot = false; // 1장 횃불(등불)도 다시 찾아야 한다
+    if (S.last === ci) S.last = null;
+    S.pendingWarp = null;
+  }
+  function resetProgress(which) { // which: 장 번호, 또는 'all'
+    if (which === 'all') { const keep = { lantern: S.lantern, music: S.music, effects: S.effects, sens: S.sens, unlocked: true }; S = Object.assign(fresh(), keep); }
+    else resetChapter(which);
+    S.unlocked = true; titleReset = false; titleAsk = false;
+    titleResetDone = which === 'all' ? '모든 시대의 진행을 지웠어요.' : CHAPTERS[which].no + ' ' + CHAPTERS[which].name + '의 진행을 지웠어요. 다른 시대는 그대로예요.';
+    saveNow(); renderStatus(); G.sync(); sfx('door'); renderTitle();
+  }
+  function resetPanelHTML() {
+    if (titleReset === 'pick') return '<span>어느 시대의 진행을 지울까요?</span><div class="tresetpick">' +
+      CHAPTERS.map((c, i) => '<button type="button" data-reset="' + i + '"' + (chapterHasProgress(i) ? '' : ' disabled title="아직 진행이 없어요"') + '>' + esc(c.no + ' ' + c.name) + '</button>').join('') +
+      '<button type="button" data-reset="all"' + (hasProgress() ? '' : ' disabled') + '>모든 시대</button><button type="button" id="tResetNo">취소</button></div>';
+    if (titleReset !== false && titleReset != null) {
+      const name = titleReset === 'all' ? '모든 시대' : CHAPTERS[titleReset].no + ' ' + CHAPTERS[titleReset].name;
+      return '<span><b>' + esc(name) + '</b>의 진행(푼 문제·연 문·가방·시간)을 지울까요? 되돌릴 수 없어요.</span><button type="button" id="tResetYes" class="warn">지우기</button><button type="button" id="tResetNo">취소</button>';
+    }
+    return (titleResetDone ? '<span class="ok">' + esc(titleResetDone) + '</span>' : '') + '<button type="button" id="tReset">진행 초기화</button>';
   }
   function continueGame() { let i = S.last != null ? S.last : 0; const st = S.chs[CHAPTERS[i].id]; if (st && st.done && CHAPTERS[i + 1]) i++; enterChapter(i); }
   function tryCode() {
@@ -4145,10 +4193,15 @@ html.public .game { height: 100vh; height: 100dvh; min-height: 0; border-radius:
     if (b.id === 'tMusic') { S.music = S.music === false; audio(); syncSoundBtn(); saveNow(); renderTitle(); return; }
     if (b.id === 'tSfx') { S.effects = S.effects === false; syncSoundBtn(); saveNow(); sfx('ok'); renderTitle(); return; }
     if (b.id === 'tCodeGo') return tryCode();
+    if (b.id === 'tReset') { titleReset = 'pick'; titleResetDone = false; renderTitle(); return; }
+    if (b.dataset.reset != null) { titleReset = b.dataset.reset === 'all' ? 'all' : +b.dataset.reset; renderTitle(); return; }
+    if (b.id === 'tResetNo') { titleReset = false; renderTitle(); return; }
+    if (b.id === 'tResetYes') return resetProgress(titleReset);
   });
   $('title').addEventListener('keydown', e => { if (e.target.id === 'tCodeIn' && e.key === 'Enter') tryCode(); e.stopPropagation(); });  function showTitle() {
     S.playing = false; saveNow(); if (G.release) G.release(); ambience(false);
     if (G.prefetchKits && !showTitle.pre) { showTitle.pre = true; setTimeout(() => G.prefetchKits(), 1500); } // 시작 화면에서 모델을 미리 받아 둔다
+    titleReset = false; titleResetDone = false;
     renderTitle(); $('title').hidden = false; renderStatus(); G.sync();
   }
   // 장에 들어가기: 처음이면 도입 이야기를 보여 주고, 다녀간 장이면 있던 자리에서 이어 한다
